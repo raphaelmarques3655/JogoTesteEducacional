@@ -584,6 +584,7 @@ export default function PlatformGame({
   onExit
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const gameStageRef = useRef<HTMLDivElement | null>(null);
   const mobileHudRef = useRef<HTMLDivElement | null>(null);
   const leftButtonRef = useRef<HTMLButtonElement | null>(null);
   const rightButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -636,6 +637,7 @@ export default function PlatformGame({
   const [countdown, setCountdown] = useState(3);
   const [bossHp, setBossHp] = useState(levelRef.current.boss?.hp ?? 0);
   const [activePowers, setActivePowers] = useState<PowerType[]>([]);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const resetGame = () => {
     const config = createLevel(level);
@@ -1531,6 +1533,48 @@ export default function PlatformGame({
     level
   ]);
 
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(
+        document.fullscreenElement === gameStageRef.current
+      );
+    };
+
+    document.addEventListener(
+      'fullscreenchange',
+      handleFullscreenChange
+    );
+
+    return () => {
+      document.removeEventListener(
+        'fullscreenchange',
+        handleFullscreenChange
+      );
+    };
+  }, []);
+
+  const toggleFullscreen = async () => {
+    try {
+      const stage = gameStageRef.current;
+
+      if (!stage) {
+        return;
+      }
+
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+        return;
+      }
+
+      await stage.requestFullscreen();
+    } catch (error) {
+      console.error(
+        'Não foi possível ativar a tela cheia:',
+        error
+      );
+    }
+  };
+
   /*
     MULTITOUCH MOBILE REAL
 
@@ -1687,6 +1731,64 @@ export default function PlatformGame({
           display: none;
         }
 
+        .platform-game-toolbar {
+          width: 100%;
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+          margin-bottom: 8px;
+          box-sizing: border-box;
+        }
+
+        .platform-fullscreen-button {
+          border: 0;
+          border-radius: 12px;
+          padding: 10px 14px;
+          background: rgba(18,35,62,.95);
+          color: white;
+          font-weight: 800;
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(0,0,0,.2);
+        }
+
+        .platform-fullscreen-button:hover {
+          transform: translateY(-1px);
+        }
+
+        .platform-game-stage:fullscreen {
+          width: 100vw;
+          height: 100vh;
+          max-width: none;
+          margin: 0;
+          padding: 12px;
+          background: #0b1424;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+        }
+
+        .platform-game-stage:fullscreen .platform-game-toolbar {
+          width: min(100%, 1100px);
+          flex: 0 0 auto;
+        }
+
+        .platform-game-stage:fullscreen canvas {
+          width: auto !important;
+          height: auto !important;
+          max-width: min(100%, 1100px) !important;
+          max-height: calc(100vh - 130px) !important;
+          object-fit: contain;
+          flex: 0 1 auto;
+        }
+
+        .platform-game-stage:fullscreen .platform-mobile-hud {
+          width: min(100%, 900px);
+          flex: 0 0 auto;
+        }
+
         @media (max-width: 768px), (pointer: coarse) {
           .platform-desktop-help {
             display: none;
@@ -1757,6 +1859,24 @@ export default function PlatformGame({
             font-size: 12px;
             gap: 7px !important;
           }
+
+          .platform-game-toolbar {
+            margin-bottom: 6px;
+          }
+
+          .platform-fullscreen-button {
+            padding: 8px 11px;
+            font-size: 13px;
+          }
+
+          .platform-game-stage:fullscreen {
+            justify-content: flex-start;
+            padding: 8px;
+          }
+
+          .platform-game-stage:fullscreen canvas {
+            max-height: calc(100vh - 126px) !important;
+          }
         }
       `}</style>
       <h2>🎮 FASE BÔNUS {level}</h2>
@@ -1802,8 +1922,19 @@ export default function PlatformGame({
       </div>
 
       <div
+        ref={gameStageRef}
         className="platform-game-stage"
       >
+        <div className="platform-game-toolbar">
+          <button
+            type="button"
+            className="platform-fullscreen-button"
+            onClick={toggleFullscreen}
+          >
+            {isFullscreen ? '⤢ Sair da tela cheia' : '⛶ Tela cheia'}
+          </button>
+        </div>
+
         <canvas
           ref={canvasRef}
           width={CANVAS_WIDTH}
