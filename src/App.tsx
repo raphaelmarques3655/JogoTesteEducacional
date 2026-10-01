@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import confetti from 'canvas-confetti';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import PlatformGame from './components/PlatformGame';
 
 import {
   Home,
@@ -62,7 +63,9 @@ type Page =
   | 'math'
   | 'achievements'
   | 'profile'
-  | 'adult';
+  | 'adult'
+  | 'bonus-levels'
+  | 'bonus-game';
 
 type Level =
   | 'Garatuja'
@@ -364,6 +367,23 @@ const loadStudentProgress = async (id: string): Promise<Progress> => {
         usedReadingExercises: Array.isArray(data.usedReadingExercises)
           ? data.usedReadingExercises
           : [],
+          bonusLevelsUnlocked:
+  typeof data.bonusLevelsUnlocked === 'number'
+    ? data.bonusLevelsUnlocked
+    : 0,
+
+bonusLevelsCompleted: Array.isArray(data.bonusLevelsCompleted)
+  ? data.bonusLevelsCompleted
+  : [],
+          bonusLevelsUnlocked:
+  typeof parsed.bonusLevelsUnlocked === 'number'
+    ? parsed.bonusLevelsUnlocked
+    : 0,
+
+bonusLevelsCompleted: Array.isArray(parsed.bonusLevelsCompleted)
+  ? parsed.bonusLevelsCompleted
+  : [],
+  
         history: Array.isArray(data.history) ? data.history : []
       };
     }
@@ -556,6 +576,8 @@ const addLevelHistory = (
 
 export default function App() {
   const [page, setPage] = useState<Page>('role');
+
+  const [selectedBonusLevel, setSelectedBonusLevel] = useState(1);
 
   const [students, setStudents] = useState<Student[]>([]);
 
@@ -981,98 +1003,141 @@ export default function App() {
   };
 
   const complete = (
-    label: string,
-    score = 10,
-    kind?: 'letters' | 'syllables' | 'words',
-    item?: string,
-    affectsLiteracy = true
-  ) => {
-    if (affectsLiteracy) {
-      registerAttempt(true);
-    }
+  label: string,
+  score = 10,
+  kind?: 'letters' | 'syllables' | 'words',
+  item?: string,
+  affectsLiteracy = true
+) => {
+  if (affectsLiteracy) {
+    registerAttempt(true);
+  }
 
-    setProgress((p) => {
-      let next: Progress = {
-        ...p,
+  setProgress((p) => {
+    let next: Progress = {
+      ...p,
 
-        practicedLetters: Array.isArray(p.practicedLetters)
-          ? [...p.practicedLetters]
-          : [],
+      practicedLetters: Array.isArray(p.practicedLetters)
+        ? [...p.practicedLetters]
+        : [],
 
-        practicedSyllables: Array.isArray(p.practicedSyllables)
-          ? [...p.practicedSyllables]
-          : [],
+      practicedSyllables: Array.isArray(p.practicedSyllables)
+        ? [...p.practicedSyllables]
+        : [],
 
-        practicedWords: Array.isArray(p.practicedWords)
-          ? [...p.practicedWords]
-          : []
-      };
+      practicedWords: Array.isArray(p.practicedWords)
+        ? [...p.practicedWords]
+        : []
+    };
 
-      if (kind && item) {
-        const normalizedItem =
-          item.trim().toUpperCase();
+    if (kind && item) {
+      const normalizedItem =
+        item.trim().toUpperCase();
 
-        if (kind === 'letters') {
-          const alreadyPracticed =
-            next.practicedLetters.includes(
-              normalizedItem
-            );
+      if (kind === 'letters') {
+        const alreadyPracticed =
+          next.practicedLetters.includes(
+            normalizedItem
+          );
 
-          if (!alreadyPracticed) {
-            next.practicedLetters = [
-              ...next.practicedLetters,
-              normalizedItem
-            ];
-          }
-
-          next.letters =
-            next.practicedLetters.length;
+        if (!alreadyPracticed) {
+          next.practicedLetters = [
+            ...next.practicedLetters,
+            normalizedItem
+          ];
         }
 
-        if (kind === 'syllables') {
-          const alreadyPracticed =
-            next.practicedSyllables.includes(
-              normalizedItem
-            );
-
-          if (!alreadyPracticed) {
-            next.practicedSyllables = [
-              ...next.practicedSyllables,
-              normalizedItem
-            ];
-          }
-
-          next.syllables =
-            next.practicedSyllables.length;
-        }
-
-        if (kind === 'words') {
-          const alreadyPracticed =
-            next.practicedWords.includes(
-              normalizedItem
-            );
-
-          if (!alreadyPracticed) {
-            next.practicedWords = [
-              ...next.practicedWords,
-              normalizedItem
-            ];
-          }
-
-          next.words =
-            next.practicedWords.length;
-        }
+        next.letters =
+          next.practicedLetters.length;
       }
 
-      return reward(next, label, score);
-    });
+      if (kind === 'syllables') {
+        const alreadyPracticed =
+          next.practicedSyllables.includes(
+            normalizedItem
+          );
 
-    confetti({
-      particleCount: 80,
-      spread: 70,
-      origin: { y: 0.65 }
-    });
-  };
+        if (!alreadyPracticed) {
+          next.practicedSyllables = [
+            ...next.practicedSyllables,
+            normalizedItem
+          ];
+        }
+
+        next.syllables =
+          next.practicedSyllables.length;
+      }
+
+      if (kind === 'words') {
+        const alreadyPracticed =
+          next.practicedWords.includes(
+            normalizedItem
+          );
+
+        if (!alreadyPracticed) {
+          next.practicedWords = [
+            ...next.practicedWords,
+            normalizedItem
+          ];
+        }
+
+        next.words =
+          next.practicedWords.length;
+      }
+    }
+
+    const rewarded = reward(next, label, score);
+
+    return {
+      ...rewarded,
+      bonusLevelsUnlocked:
+        affectsLiteracy
+          ? Math.min(
+              20,
+              Math.max(
+                rewarded.bonusLevelsUnlocked ?? 0,
+                rewarded.activities
+              )
+            )
+          : rewarded.bonusLevelsUnlocked ?? 0
+    };
+  });
+
+  confetti({
+    particleCount: 80,
+    spread: 70,
+    origin: { y: 0.65 }
+  });
+};
+
+  const completeBonusLevel = (level: number) => {
+  setProgress((current) => {
+    const completed =
+      Array.isArray(current.bonusLevelsCompleted)
+        ? current.bonusLevelsCompleted
+        : [];
+
+    if (completed.includes(level)) {
+      return current;
+    }
+
+    return {
+      ...current,
+      bonusLevelsCompleted: [
+        ...completed,
+        level
+      ]
+    };
+  });
+
+  confetti({
+    particleCount: 140,
+    spread: 100,
+    origin: { y: 0.6 }
+  });
+
+  setPage('home');
+};
 
   const wrong = (affectsLiteracy = true) => {
     if (affectsLiteracy) registerAttempt(false);
@@ -1196,12 +1261,13 @@ export default function App() {
   }
 
   const nav = [
-    ['home', Home, 'Início'],
-    ['learn', BookOpen, 'Aprender'],
-    ['games', Gamepad2, 'Jogos'],
-    ['achievements', Trophy, 'Conquistas'],
-    ['profile', User, 'Perfil']
-  ] as const;
+  ['home', Home, 'Início'],
+  ['learn', BookOpen, 'Aprender'],
+  ['games', Gamepad2, 'Jogos'],
+  ['bonus-levels', Gamepad2, 'Bônus'],
+  ['achievements', Trophy, 'Conquistas'],
+  ['profile', User, 'Perfil']
+] as const;
 
   return (
     <div
@@ -1244,159 +1310,258 @@ export default function App() {
       </header>
 
       <main>
-        {page !== 'home' && (
-          <button
-            className="back"
-            onClick={() => setPage('home')}
-          >
-            <ArrowLeft />
-            Voltar
-          </button>
-        )}
+  {page !== 'home' && (
+    <button
+      className="back"
+      onClick={() => setPage('home')}
+    >
+      <ArrowLeft />
+      Voltar
+    </button>
+  )}
 
-        {page === 'home' && (
-          <HomePage
-            name={name}
-            avatar={avatar}
-            progress={progress}
-            learning={learning}
-            go={setPage}
-          />
-        )}
+  {page === 'home' && (
+    <HomePage
+      name={name}
+      avatar={avatar}
+      progress={progress}
+      learning={learning}
+      go={setPage}
+    />
+  )}
 
-        {page === 'learn' && (
-          <Learn
-            go={setPage}
-            learning={learning}
-          />
-        )}
+  {page === 'learn' && (
+    <Learn
+      go={setPage}
+      learning={learning}
+    />
+  )}
 
-        {page === 'letters' && (
-          <Letters
-            complete={complete}
-            wrong={wrong}
-          />
-        )}
+  {page === 'letters' && (
+    <Letters
+      complete={complete}
+      wrong={wrong}
+    />
+  )}
 
-        {page === 'syllables' && (
-          <Syllables
-            complete={complete}
-            wrong={wrong}
-          />
-        )}
+  {page === 'syllables' && (
+    <Syllables
+      complete={complete}
+      wrong={wrong}
+    />
+  )}
 
-        {page === 'words' && (
-          <Quiz
-            title="🧩 Forme a palavra"
-            questions={wordQuestions}
-            progress={progress}
-            setProgress={setProgress}
-            complete={(word) =>
-              complete(
-                `Formação da palavra ${word}`,
-                15,
-                'words',
-                word
-              )
-            }
-            wrong={wrong}
-          />
-        )}
+  {page === 'words' && (
+    <Quiz
+      title="🧩 Forme a palavra"
+      questions={wordQuestions}
+      progress={progress}
+      setProgress={setProgress}
+      complete={(word) =>
+        complete(
+          `Formação da palavra ${word}`,
+          15,
+          'words',
+          word
+        )
+      }
+      wrong={wrong}
+    />
+  )}
 
-        {page === 'reading' && (
-          <Reading
-            progress={progress}
-            setProgress={setProgress}
-            complete={(word) =>
-              complete(
-                `Leitura da palavra ${word}`,
-                15,
-                'words',
-                word
-              )
-            }
-            wrong={wrong}
-          />
-        )}
+  {page === 'reading' && (
+    <Reading
+      progress={progress}
+      setProgress={setProgress}
+      complete={(word) =>
+        complete(
+          `Leitura da palavra ${word}`,
+          15,
+          'words',
+          word
+        )
+      }
+      wrong={wrong}
+    />
+  )}
 
-        {page === 'writing' && (
-          <Writing
-            complete={(letter) =>
-              complete(
-                `Escrita da letra ${letter}`,
-                12,
-                'letters',
-                letter
-              )
-            }
-            wrong={wrong}
-          />
-        )}
+  {page === 'writing' && (
+    <Writing
+      complete={(letter) =>
+        complete(
+          `Escrita da letra ${letter}`,
+          12,
+          'letters',
+          letter
+        )
+      }
+      wrong={wrong}
+    />
+  )}
 
-        {page === 'games' && (
-          <Games
-            learning={learning}
-            progress={progress}
-            setProgress={setProgress}
-            complete={complete}
-            wrong={wrong}
-            completeMath={(label, score) =>
-              complete(
-                label,
-                score,
-                undefined,
-                undefined,
-                false
-              )
-            }
-            wrongMath={() => wrong(false)}
-          />
-        )}
+  {page === 'games' && (
+    <Games
+      learning={learning}
+      progress={progress}
+      setProgress={setProgress}
+      complete={complete}
+      wrong={wrong}
+      completeMath={(label, score) =>
+        complete(
+          label,
+          score,
+          undefined,
+          undefined,
+          false
+        )
+      }
+      wrongMath={() => wrong(false)}
+    />
+  )}
 
-        {page === 'math' && (
-          <MathLearningGame
-            progress={progress}
-            setProgress={setProgress}
-            complete={() =>
-              complete(
-                'Matemática',
-                12,
-                undefined,
-                undefined,
-                false
-              )
-            }
-            wrong={() => wrong(false)}
-          />
-        )}
-        {page === 'achievements' && (
-          <Achievements progress={progress} />
-        )}
+  {page === 'math' && (
+    <MathLearningGame
+      progress={progress}
+      setProgress={setProgress}
+      complete={() =>
+        complete(
+          'Matemática',
+          12,
+          undefined,
+          undefined,
+          false
+        )
+      }
+      wrong={() => wrong(false)}
+    />
+  )}
 
-        {page === 'profile' && (
-          <Profile
-            name={name}
-            avatar={avatar}
-            progress={progress}
-            learning={learning}
-            go={setPage}
-          />
-        )}
-      </main>
+  {page === 'bonus-levels' && (
+    <BonusLevelSelection
+      progress={progress}
+      onPlay={(level) => {
+        setSelectedBonusLevel(level);
+        setPage('bonus-game');
+      }}
+    />
+  )}
 
-      <nav>
-        {nav.map(([p, Icon, label]) => (
-          <button
-            className={page === p ? 'active' : ''}
-            onClick={() => setPage(p as Page)}
-            key={p}
-          >
-            <Icon />
-            <span>{label}</span>
-          </button>
-        ))}
-      </nav>
+  {page === 'bonus-game' && (
+    <PlatformGame
+      level={selectedBonusLevel}
+      onComplete={() =>
+        completeBonusLevel(selectedBonusLevel)
+      }
+      onExit={() =>
+        setPage('bonus-levels')
+      }
+    />
+  )}
+
+  {page === 'achievements' && (
+    <Achievements progress={progress} />
+  )}
+
+  {page === 'profile' && (
+    <Profile
+      name={name}
+      avatar={avatar}
+      progress={progress}
+      learning={learning}
+      go={setPage}
+    />
+  )}
+</main>
+
+<nav>
+  {nav.map(([p, Icon, label]) => (
+    <button
+      className={page === p ? 'active' : ''}
+      onClick={() => setPage(p as Page)}
+      key={p}
+    >
+      <Icon />
+      <span>{label}</span>
+    </button>
+  ))}
+</nav>
     </div>
+  );
+}
+
+  function BonusLevelSelection({
+  progress,
+  onPlay
+}: {
+  progress: Progress;
+  onPlay: (level: number) => void;
+}) {
+  const unlocked =
+    progress.bonusLevelsUnlocked ?? 0;
+
+  const completed =
+    progress.bonusLevelsCompleted ?? [];
+
+  return (
+    <section>
+      <h1>🎮 Fases Bônus</h1>
+
+      <p className="instruction">
+        Complete atividades para desbloquear novas fases!
+      </p>
+
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns:
+            'repeat(auto-fit, minmax(150px, 1fr))',
+          gap: '15px',
+          marginTop: '25px'
+        }}
+      >
+        {Array.from(
+          { length: 20 },
+          (_, index) => index + 1
+        ).map((level) => {
+          const available =
+            level <= unlocked;
+
+          const done =
+            completed.includes(level);
+
+          return (
+            <button
+              key={level}
+              disabled={!available}
+              onClick={() =>
+                available && onPlay(level)
+              }
+              style={{
+                padding: '25px',
+                borderRadius: '18px',
+                border: 'none',
+                cursor:
+                  available
+                    ? 'pointer'
+                    : 'not-allowed',
+                opacity:
+                  available
+                    ? 1
+                    : 0.45,
+                fontSize: '18px',
+                fontWeight: 800
+              }}
+            >
+              {done
+                ? `✅ FASE ${level}`
+                : available
+                  ? `🎮 FASE ${level}`
+                  : `🔒 FASE ${level}`}
+            </button>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 

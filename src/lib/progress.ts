@@ -19,6 +19,9 @@ export type Progress = {
   usedWordExercises: string[];
   usedReadingExercises: string[];
 
+  bonusLevelsUnlocked: number;
+  bonusLevelsCompleted: number[];
+
   streak: number;
   badges: string[];
 
@@ -49,6 +52,9 @@ export const initialProgress: Progress = {
 
   usedWordExercises: [],
   usedReadingExercises: [],
+
+  bonusLevelsUnlocked: 0,
+  bonusLevelsCompleted: [],
 
   streak: 1,
   badges: [],
@@ -102,6 +108,14 @@ export const loadProgress = (): Progress => {
       usedReadingExercises: Array.isArray(saved.usedReadingExercises)
         ? saved.usedReadingExercises
         : [],
+        bonusLevelsUnlocked:
+  typeof saved.bonusLevelsUnlocked === 'number'
+    ? saved.bonusLevelsUnlocked
+    : 0,
+
+bonusLevelsCompleted: Array.isArray(saved.bonusLevelsCompleted)
+  ? saved.bonusLevelsCompleted
+  : [],
 
       history: Array.isArray(saved.history)
         ? saved.history
@@ -119,6 +133,8 @@ export const loadProgress = (): Progress => {
       usedMathExercises: [],
       usedWordExercises: [],
       usedReadingExercises: [],
+      bonusLevelsUnlocked: 0,
+      bonusLevelsCompleted: [],
       history: []
     };
   }

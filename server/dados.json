@@ -1504,9 +1504,9 @@
       ]
     },
     "1790852725455-7netui": {
-      "points": 72,
-      "stars": 9,
-      "activities": 9,
+      "points": 56,
+      "stars": 7,
+      "activities": 7,
       "letters": 7,
       "syllables": 0,
       "words": 0,
@@ -1527,6 +1527,8 @@
       "usedMathExercises": [],
       "usedWordExercises": [],
       "usedReadingExercises": [],
+      "bonusLevelsUnlocked": 7,
+      "bonusLevelsCompleted": [],
       "streak": 1,
       "badges": [
         "primeira"
@@ -1534,47 +1536,37 @@
       "history": [
         {
           "label": "Letra G",
-          "at": 1790852761869,
+          "at": 1790858697300,
           "score": 8
         },
         {
           "label": "Letra F",
-          "at": 1790852760835,
+          "at": 1790858696436,
           "score": 8
         },
         {
           "label": "Letra E",
-          "at": 1790852759578,
+          "at": 1790858695366,
           "score": 8
         },
         {
           "label": "Letra D",
-          "at": 1790852758692,
+          "at": 1790858694379,
           "score": 8
         },
         {
           "label": "Letra C",
-          "at": 1790852757607,
+          "at": 1790858693445,
           "score": 8
         },
         {
           "label": "Letra B",
-          "at": 1790852756336,
-          "score": 8
-        },
-        {
-          "label": "Letra B",
-          "at": 1790852756180,
+          "at": 1790858692431,
           "score": 8
         },
         {
           "label": "Letra A",
-          "at": 1790852754464,
-          "score": 8
-        },
-        {
-          "label": "Letra A",
-          "at": 1790852754292,
+          "at": 1790858691187,
           "score": 8
         }
       ]
@@ -2120,10 +2112,10 @@
       "initialLevel": "Silábico com valor",
       "suggestedLevel": "Silábico com valor",
       "manualLevel": null,
-      "correctAnswers": 9,
+      "correctAnswers": 16,
       "wrongAnswers": 0,
-      "totalAttempts": 9,
-      "updatedAt": "2026-10-01T11:06:01.868Z",
+      "totalAttempts": 16,
+      "updatedAt": "2026-10-01T12:44:57.299Z",
       "levelHistory": [
         {
           "level": "Silábico com valor",
