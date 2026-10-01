@@ -19,7 +19,18 @@ type Player = {
   height: number;
   facing: 1 | -1;
   walkFrame: number;
+
+  powered: boolean;
+  powerType: PowerType | null;
+  powerUntil: number;
 };
+
+type PowerType =
+  | 'grow'
+  | 'shield'
+  | 'speed'
+  | 'jump'
+  | 'life';
 
 type Platform = {
   x: number;
@@ -60,6 +71,20 @@ type Particle = {
   vx: number;
   vy: number;
   life: number;
+  color?: string;
+  size?: number;
+};
+
+type LetterPickup = {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+
+  letter: string;
+
+  collected: boolean;
+  onGround: boolean;
 };
 
 type Boss = {
@@ -103,6 +128,39 @@ const PLAYER_HEIGHT = 42;
 const GRAVITY = 0.62;
 const WALK_SPEED = 5;
 const JUMP_FORCE = -12;
+
+const ALPHABET =
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
+function getLetterPower(
+  letter: string
+): PowerType {
+  if (
+    ['A', 'F', 'K', 'P', 'U', 'Z'].includes(letter)
+  ) {
+    return 'grow';
+  }
+
+  if (
+    ['B', 'G', 'L', 'Q', 'V'].includes(letter)
+  ) {
+    return 'shield';
+  }
+
+  if (
+    ['C', 'H', 'M', 'R', 'W'].includes(letter)
+  ) {
+    return 'speed';
+  }
+
+  if (
+    ['D', 'I', 'N', 'S', 'X'].includes(letter)
+  ) {
+    return 'jump';
+  }
+
+  return 'life';
+}
 
 function makeCoin(
   x: number,
@@ -1307,8 +1365,11 @@ export default function PlatformGame({
         PLAYER_HEIGHT,
 
       facing: 1,
+walkFrame: 0,
 
-      walkFrame: 0
+powered: false,
+powerType: null,
+powerUntil: 0
     });
 
   const cameraX =
@@ -1324,6 +1385,24 @@ export default function PlatformGame({
     useRef<
       Particle[]
     >([]);
+
+    const letterPickups =
+  useRef<LetterPickup[]>([]);
+
+const collectedLetters =
+  useRef<string[]>([]);
+
+const fireworkStarted =
+  useRef(false);
+
+const shieldUntil =
+  useRef(0);
+
+const speedUntil =
+  useRef(0);
+
+const jumpUntil =
+  useRef(0);
 
   const invulnerableUntil =
     useRef(0);
@@ -1408,7 +1487,11 @@ export default function PlatformGame({
         PLAYER_HEIGHT,
 
       facing: 1,
-      walkFrame: 0
+      walkFrame: 0,
+
+      powered: false,
+powerType: null,
+powerUntil: 0
     };
 
     cameraX.current = 0;
@@ -1420,6 +1503,18 @@ export default function PlatformGame({
       false;
 
     particles.current = [];
+
+    letterPickups.current = [];
+
+collectedLetters.current = [];
+
+fireworkStarted.current = false;
+
+shieldUntil.current = 0;
+
+speedUntil.current = 0;
+
+jumpUntil.current = 0;
 
     invulnerableUntil.current =
       0;
@@ -1653,6 +1748,231 @@ export default function PlatformGame({
       }
     };
 
+    const spawnFireworks = (
+  centerX: number
+) => {
+  const colors = [
+    '#ff4757',
+    '#ffd32a',
+    '#2ed573',
+    '#1e90ff',
+    '#a55eea',
+    '#ff9f43',
+    '#ffffff'
+  ];
+
+  for (
+    let explosion = 0;
+    explosion < 7;
+    explosion++
+  ) {
+    const x =
+      centerX -
+      250 +
+      Math.random() *
+        500;
+
+    const y =
+      70 +
+      Math.random() *
+        200;
+
+    const color =
+      colors[
+        Math.floor(
+          Math.random() *
+            colors.length
+        )
+      ];
+
+    for (
+      let i = 0;
+      i < 30;
+      i++
+    ) {
+      const angle =
+        Math.random() *
+        Math.PI *
+        2;
+
+      const speed =
+        1.5 +
+        Math.random() *
+          4;
+
+      particles.current.push({
+        x,
+        y,
+
+        vx:
+          Math.cos(angle) *
+          speed,
+
+        vy:
+          Math.sin(angle) *
+          speed,
+
+        life:
+          0.8 +
+          Math.random() *
+            0.7,
+
+        color,
+
+        size:
+          2 +
+          Math.random() *
+            4
+      });
+    }
+  }
+};
+
+    const applyLetterPower = (
+  letter: string
+) => {
+  const p =
+    player.current;
+
+    if (
+  p.powerType ===
+    'grow' &&
+  Date.now() >
+    p.powerUntil
+) {
+  p.width =
+    PLAYER_WIDTH;
+
+  p.height =
+    PLAYER_HEIGHT;
+
+  p.powered =
+    false;
+
+  p.powerType =
+    null;
+}
+if (
+  p.powerType ===
+    'shield' &&
+  Date.now() >
+    shieldUntil.current
+) {
+  p.powered =
+    false;
+
+  p.powerType =
+    null;
+}
+
+if (
+  p.powerType ===
+    'speed' &&
+  Date.now() >
+    speedUntil.current
+) {
+  p.powered =
+    false;
+
+  p.powerType =
+    null;
+}
+
+if (
+  p.powerType ===
+    'jump' &&
+  Date.now() >
+    jumpUntil.current
+) {
+  p.powered =
+    false;
+
+  p.powerType =
+    null;
+}
+
+  const power =
+    getLetterPower(
+      letter
+    );
+
+  p.powered = true;
+  p.powerType = power;
+
+  if (power === 'grow') {
+    p.powerUntil =
+      Date.now() + 10000;
+
+    p.width = 42;
+    p.height = 58;
+
+    playSound(
+      1100,
+      0.18,
+      'triangle'
+    );
+  }
+
+  if (power === 'shield') {
+    shieldUntil.current =
+      Date.now() + 8000;
+
+    p.powerUntil =
+      shieldUntil.current;
+
+    playSound(
+      900,
+      0.16,
+      'triangle'
+    );
+  }
+
+  if (power === 'speed') {
+    speedUntil.current =
+      Date.now() + 8000;
+
+    p.powerUntil =
+      speedUntil.current;
+
+    playSound(
+      1200,
+      0.15,
+      'square'
+    );
+  }
+
+  if (power === 'jump') {
+    jumpUntil.current =
+      Date.now() + 8000;
+
+    p.powerUntil =
+      jumpUntil.current;
+
+    playSound(
+      1350,
+      0.15,
+      'triangle'
+    );
+  }
+
+  if (power === 'life') {
+    livesRef.current += 1;
+
+    setLives(
+      livesRef.current
+    );
+
+    p.powered = false;
+    p.powerType = null;
+
+    playSound(
+      1500,
+      0.2,
+      'triangle'
+    );
+  }
+};
+
     const resetPlayer = () => {
       const config =
         levelRef.current;
@@ -1681,6 +2001,36 @@ export default function PlatformGame({
     };
 
     const loseLife = () => {
+
+        if (
+  Date.now() <
+  shieldUntil.current
+) {
+  shieldUntil.current =
+    0;
+
+  player.current.powered =
+    false;
+
+  player.current.powerType =
+    null;
+
+  spawnParticles(
+    player.current.x +
+      player.current.width /
+        2,
+    player.current.y,
+    20
+  );
+
+  playSound(
+    600,
+    0.2,
+    'triangle'
+  );
+
+  return;
+}
       if (
         Date.now() <
         invulnerableUntil.current
@@ -1720,6 +2070,17 @@ export default function PlatformGame({
     };
 
     const loop = () => {
+        const currentSpeed =
+  Date.now() <
+  speedUntil.current
+    ? WALK_SPEED * 1.6
+    : WALK_SPEED;
+
+const currentJump =
+  Date.now() <
+  jumpUntil.current
+    ? JUMP_FORCE * 1.3
+    : JUMP_FORCE;
       const config =
         levelRef.current;
 
@@ -1748,7 +2109,7 @@ export default function PlatformGame({
 
         if (left) {
           p.vx =
-            -WALK_SPEED;
+  -currentSpeed;
 
           p.facing =
             -1;
@@ -1759,7 +2120,7 @@ export default function PlatformGame({
           right
         ) {
           p.vx =
-            WALK_SPEED;
+  currentSpeed;
 
           p.facing =
             1;
@@ -1815,7 +2176,7 @@ export default function PlatformGame({
           !jumpLocked.current
         ) {
           p.vy =
-            JUMP_FORCE;
+  currentJump;
 
           jumpLocked.current =
             true;
@@ -1901,17 +2262,74 @@ export default function PlatformGame({
                 block.h
               )
             ) {
-              block.used =
-                true;
+              block.used = true;
 
-              p.vy = 2;
+p.vy = 2;
 
-              coinsRef.current +=
-                1;
+const availableLetters =
+  ALPHABET.filter(
+    (letter) =>
+      !collectedLetters.current.includes(
+        letter
+      ) &&
+      !letterPickups.current.some(
+        (pickup) =>
+          pickup.letter ===
+            letter &&
+          !pickup.collected
+      )
+  );
 
-              setCoinsCollected(
-                coinsRef.current
-              );
+const letter =
+  availableLetters.length > 0
+    ? availableLetters[
+        Math.floor(
+          Math.random() *
+            availableLetters.length
+        )
+      ]
+    : ALPHABET[
+        Math.floor(
+          Math.random() *
+            ALPHABET.length
+        )
+      ];
+
+letterPickups.current.push({
+  x:
+    block.x +
+    block.w / 2 -
+    15,
+
+  y:
+    block.y - 10,
+
+  vx:
+    Math.random() >
+    0.5
+      ? 1.7
+      : -1.7,
+
+  vy: -8,
+
+  letter,
+
+  collected: false,
+
+  onGround: false
+});
+
+spawnParticles(
+  block.x +
+    block.w / 2,
+  block.y,
+  12
+);
+
+playSound(
+  760,
+  0.1
+);
 
               spawnParticles(
                 block.x +
@@ -1928,6 +2346,170 @@ export default function PlatformGame({
             }
           }
         );
+
+        letterPickups.current.forEach(
+  (pickup) => {
+    if (
+      pickup.collected
+    ) {
+      return;
+    }
+
+    const previousBottom =
+      pickup.y + 30;
+
+    if (
+      !pickup.onGround
+    ) {
+      pickup.vy +=
+        0.38;
+
+      pickup.x +=
+        pickup.vx;
+
+      pickup.y +=
+        pickup.vy;
+    } else {
+      pickup.x +=
+        pickup.vx *
+        0.3;
+    }
+
+    let landed =
+      false;
+
+    config.platforms.forEach(
+      (platform) => {
+        const bottom =
+          pickup.y + 30;
+
+        const horizontal =
+          pickup.x + 30 >
+            platform.x &&
+          pickup.x <
+            platform.x +
+              platform.w;
+
+        if (
+          horizontal &&
+          previousBottom <=
+            platform.y +
+              7 &&
+          bottom >=
+            platform.y &&
+          pickup.vy >= 0
+        ) {
+          pickup.y =
+            platform.y -
+            30;
+
+          pickup.vy =
+            0;
+
+          pickup.onGround =
+            true;
+
+          landed = true;
+        }
+      }
+    );
+
+    if (
+      !landed &&
+      pickup.onGround
+    ) {
+      const supported =
+        config.platforms.some(
+          (platform) =>
+            pickup.x + 30 >
+              platform.x &&
+            pickup.x <
+              platform.x +
+                platform.w &&
+            Math.abs(
+              pickup.y +
+                30 -
+                platform.y
+            ) < 7
+        );
+
+      if (!supported) {
+        pickup.onGround =
+          false;
+      }
+    }
+
+    if (
+      pickup.x < 0
+    ) {
+      pickup.x = 0;
+
+      pickup.vx *=
+        -1;
+    }
+
+    if (
+      collides(
+        p.x,
+        p.y,
+        p.width,
+        p.height,
+
+        pickup.x,
+        pickup.y,
+
+        30,
+        30
+      )
+    ) {
+      pickup.collected =
+        true;
+
+      collectedLetters.current.push(
+        pickup.letter
+      );
+
+      applyLetterPower(
+        pickup.letter
+      );
+
+      spawnParticles(
+        pickup.x +
+          15,
+        pickup.y +
+          15,
+        18
+      );
+
+      playSound(
+        1050,
+        0.15,
+        'triangle'
+      );
+    }
+
+    if (
+      pickup.y >
+      CANVAS_HEIGHT +
+        100
+    ) {
+      pickup.x =
+        p.x + 80;
+
+      pickup.y =
+        Math.max(
+          80,
+          p.y - 120
+        );
+
+      pickup.vy =
+        -4;
+
+      pickup.onGround =
+        false;
+    }
+  }
+);
 
         config.coins.forEach(
           (coin) => {
@@ -2182,20 +2764,65 @@ export default function PlatformGame({
             .alive;
 
         if (
-          p.x >=
-            config.finishX &&
-          bossCleared
-        ) {
-          setFinished(
-            true
-          );
+  p.x >=
+    config.finishX &&
+  bossCleared &&
+  !finished
+) {
+  if (
+    !fireworkStarted.current
+  ) {
+    fireworkStarted.current =
+      true;
 
-          playSound(
-            760,
-            0.35,
-            'triangle'
-          );
-        }
+    spawnFireworks(
+      config.finishX
+    );
+
+    window.setTimeout(
+      () => {
+        spawnFireworks(
+          config.finishX
+        );
+
+        playSound(
+          900,
+          0.18,
+          'triangle'
+        );
+      },
+      350
+    );
+
+    window.setTimeout(
+      () => {
+        spawnFireworks(
+          config.finishX
+        );
+      },
+      700
+    );
+
+    window.setTimeout(
+      () => {
+        spawnFireworks(
+          config.finishX
+        );
+      },
+      1050
+    );
+  }
+
+  setFinished(
+    true
+  );
+
+  playSound(
+    760,
+    0.35,
+    'triangle'
+  );
+}
 
         const targetCamera =
           p.x -
@@ -2225,7 +2852,9 @@ export default function PlatformGame({
               particle.vy;
 
             particle.vy +=
-              0.2;
+  particle.color
+    ? 0.06
+    : 0.2;
 
             particle.life -=
               0.025;
@@ -2256,12 +2885,13 @@ export default function PlatformGame({
       );
 
       drawWorld(
-        ctx,
-        config,
-        camera,
-        checkpointReached.current,
-        animationTime.current
-      );
+  ctx,
+  config,
+  camera,
+  checkpointReached.current,
+  animationTime.current,
+  letterPickups.current
+);
 
       drawParticles(
         ctx,
@@ -2278,20 +2908,21 @@ export default function PlatformGame({
       );
 
       drawHud(
-        ctx,
-        level,
-        livesRef.current,
-        coinsRef.current,
-        config.coins.length,
-        checkpointReached.current,
-        timeRef.current,
-        config.boss,
-        p.x /
-          Math.max(
-            config.finishX,
-            1
-          )
-      );
+  ctx,
+  level,
+  livesRef.current,
+  coinsRef.current,
+  config.coins.length,
+  checkpointReached.current,
+  timeRef.current,
+  config.boss,
+  p.x /
+    Math.max(
+      config.finishX,
+      1
+    ),
+  p.powerType
+);
 
       if (
         !started
@@ -3041,7 +3672,8 @@ function drawWorld(
   config: LevelConfig,
   camera: number,
   checkpointReached: boolean,
-  animation: number
+  animation: number,
+  letterPickups: LetterPickup[]
 ) {
   // plataformas
   config.platforms.forEach(
@@ -3350,6 +3982,144 @@ function drawWorld(
       ctx.restore();
     }
   );
+
+  // letras dos blocos ?
+letterPickups.forEach(
+  (pickup) => {
+    if (
+      pickup.collected
+    ) {
+      return;
+    }
+
+    const x =
+      pickup.x -
+      camera;
+
+    const y =
+      pickup.y;
+
+    const pulse =
+      1 +
+      Math.sin(
+        animation * 3
+      ) *
+        0.08;
+
+    ctx.save();
+
+    ctx.translate(
+      x + 15,
+      y + 15
+    );
+
+    ctx.scale(
+      pulse,
+      pulse
+    );
+
+    const glow =
+      ctx.createRadialGradient(
+        0,
+        0,
+        3,
+        0,
+        0,
+        30
+      );
+
+    glow.addColorStop(
+      0,
+      'rgba(255,255,255,1)'
+    );
+
+    glow.addColorStop(
+      0.4,
+      'rgba(81,167,255,.65)'
+    );
+
+    glow.addColorStop(
+      1,
+      'rgba(81,167,255,0)'
+    );
+
+    ctx.fillStyle =
+      glow;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      0,
+      0,
+      30,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
+
+    const bubble =
+      ctx.createLinearGradient(
+        -15,
+        -15,
+        15,
+        15
+      );
+
+    bubble.addColorStop(
+      0,
+      '#7ad7ff'
+    );
+
+    bubble.addColorStop(
+      1,
+      '#3268df'
+    );
+
+    ctx.fillStyle =
+      bubble;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      0,
+      0,
+      16,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
+
+    ctx.strokeStyle =
+      '#fff';
+
+    ctx.lineWidth =
+      2;
+
+    ctx.stroke();
+
+    ctx.fillStyle =
+      '#fff';
+
+    ctx.textAlign =
+      'center';
+
+    ctx.textBaseline =
+      'middle';
+
+    ctx.font =
+      'bold 20px Arial';
+
+    ctx.fillText(
+      pickup.letter,
+      0,
+      1
+    );
+
+    ctx.restore();
+  }
+);
 
   // inimigos
   config.enemies.forEach(
@@ -3993,6 +4763,45 @@ function drawPlayer(
 
   ctx.save();
 
+  if (
+  player.powered
+) {
+  if (
+    player.powerType ===
+    'grow'
+  ) {
+    ctx.shadowColor =
+      '#ffd700';
+  }
+
+  if (
+    player.powerType ===
+    'shield'
+  ) {
+    ctx.shadowColor =
+      '#55d6ff';
+  }
+
+  if (
+    player.powerType ===
+    'speed'
+  ) {
+    ctx.shadowColor =
+      '#ff9f43';
+  }
+
+  if (
+    player.powerType ===
+    'jump'
+  ) {
+    ctx.shadowColor =
+      '#a55eea';
+  }
+
+  ctx.shadowBlur =
+    18;
+}
+
   // sombra
   ctx.fillStyle =
     'rgba(0,0,0,.18)';
@@ -4214,7 +5023,37 @@ function drawPlayer(
   );
 
   ctx.stroke();
+  ctx.shadowBlur = 0;
+  if (
+  player.powerType ===
+  'shield'
+) {
+  ctx.strokeStyle =
+    'rgba(90,210,255,.85)';
 
+  ctx.lineWidth =
+    3;
+
+  ctx.beginPath();
+
+  ctx.arc(
+    x +
+      player.width /
+        2,
+    y +
+      player.height /
+        2,
+    Math.max(
+      player.width,
+      player.height
+    ) *
+      0.75,
+    0,
+    Math.PI * 2
+  );
+
+  ctx.stroke();
+}
   ctx.restore();
 }
 
@@ -4228,17 +5067,31 @@ function drawParticles(
   camera: number
 ) {
   particles.forEach(
-    (
-      particle
-    ) => {
+    (particle) => {
       ctx.globalAlpha =
         Math.max(
           0,
           particle.life
         );
 
-      ctx.fillStyle =
+      const color =
+        particle.color ??
         '#ffd700';
+
+      const size =
+        particle.size ??
+        4;
+
+      ctx.fillStyle =
+        color;
+
+      ctx.shadowColor =
+        color;
+
+      ctx.shadowBlur =
+        particle.color
+          ? 10
+          : 4;
 
       ctx.beginPath();
 
@@ -4246,7 +5099,7 @@ function drawParticles(
         particle.x -
           camera,
         particle.y,
-        4,
+        size,
         0,
         Math.PI * 2
       );
@@ -4254,6 +5107,9 @@ function drawParticles(
       ctx.fill();
     }
   );
+
+  ctx.shadowBlur =
+    0;
 
   ctx.globalAlpha =
     1;
@@ -4272,7 +5128,8 @@ function drawHud(
   checkpoint: boolean,
   timeLeft: number,
   boss: Boss | null,
-  progress: number
+  progress: number,
+  powerType: PowerType | null
 ) {
   ctx.save();
 
@@ -4390,6 +5247,32 @@ function drawHud(
       98
     );
   }
+  if (
+  powerType
+) {
+  const powerName =
+    powerType === 'grow'
+      ? 'CRESCER'
+      : powerType === 'shield'
+        ? 'ESCUDO'
+        : powerType === 'speed'
+          ? 'VELOCIDADE'
+          : powerType === 'jump'
+            ? 'SUPER PULO'
+            : 'VIDA';
+
+  ctx.fillStyle =
+    '#ffd700';
+
+  ctx.font =
+    'bold 14px Arial';
+
+  ctx.fillText(
+    `⚡ ${powerName}`,
+    245,
+    98
+  );
+}
 
   ctx.restore();
 }

@@ -1504,15 +1504,16 @@
       ]
     },
     "1790852725455-7netui": {
-      "points": 16,
-      "stars": 2,
-      "activities": 2,
-      "letters": 2,
+      "points": 24,
+      "stars": 3,
+      "activities": 3,
+      "letters": 3,
       "syllables": 0,
       "words": 0,
       "practicedLetters": [
         "A",
-        "B"
+        "Z",
+        "Y"
       ],
       "practicedSyllables": [],
       "practicedWords": [],
@@ -1522,24 +1523,26 @@
       "usedMathExercises": [],
       "usedWordExercises": [],
       "usedReadingExercises": [],
-      "bonusLevelsUnlocked": 2,
-      "bonusLevelsCompleted": [
-        2,
-        1
-      ],
+      "bonusLevelsUnlocked": 1,
+      "bonusLevelsCompleted": [],
       "streak": 1,
       "badges": [
         "primeira"
       ],
       "history": [
         {
-          "label": "Letra B",
-          "at": 1790858996174,
+          "label": "Letra Y",
+          "at": 1790862885042,
+          "score": 8
+        },
+        {
+          "label": "Letra Z",
+          "at": 1790862883502,
           "score": 8
         },
         {
           "label": "Letra A",
-          "at": 1790858994433,
+          "at": 1790862880935,
           "score": 8
         }
       ]
@@ -2085,10 +2088,10 @@
       "initialLevel": "Silábico com valor",
       "suggestedLevel": "Silábico com valor",
       "manualLevel": null,
-      "correctAnswers": 18,
+      "correctAnswers": 48,
       "wrongAnswers": 0,
-      "totalAttempts": 18,
-      "updatedAt": "2026-10-01T12:49:56.173Z",
+      "totalAttempts": 48,
+      "updatedAt": "2026-10-01T13:54:45.037Z",
       "levelHistory": [
         {
           "level": "Silábico com valor",

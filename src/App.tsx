@@ -574,6 +574,218 @@ const addLevelHistory = (
   ].slice(-40);
 };
 
+type BonusRequirement = {
+  level: number;
+  title: string;
+  description: string;
+  check: (progress: Progress) => boolean;
+};
+
+const BONUS_REQUIREMENTS: BonusRequirement[] = [
+  {
+    level: 1,
+    title: 'Explorador das Letras',
+    description: 'Pratique 3 letras diferentes.',
+    check: (p) =>
+      p.practicedLetters.length >= 3
+  },
+
+  {
+    level: 2,
+    title: 'Conhecendo o Alfabeto',
+    description: 'Pratique 6 letras diferentes.',
+    check: (p) =>
+      p.practicedLetters.length >= 6
+  },
+
+  {
+    level: 3,
+    title: 'Primeiras Sílabas',
+    description:
+      'Pratique 3 sílabas diferentes.',
+    check: (p) =>
+      p.practicedSyllables.length >= 3
+  },
+
+  {
+    level: 4,
+    title: 'Mestre das Sílabas',
+    description:
+      'Pratique 6 sílabas diferentes.',
+    check: (p) =>
+      p.practicedSyllables.length >= 6
+  },
+
+  {
+    level: 5,
+    title: 'Primeiras Palavras',
+    description:
+      'Pratique 3 palavras diferentes.',
+    check: (p) =>
+      p.practicedWords.length >= 3
+  },
+
+  {
+    level: 6,
+    title: 'Construtor de Palavras',
+    description:
+      'Pratique 6 palavras diferentes.',
+    check: (p) =>
+      p.practicedWords.length >= 6
+  },
+
+  {
+    level: 7,
+    title: 'Complete a Palavra',
+    description:
+      'Resolva 2 exercícios diferentes de completar palavras.',
+    check: (p) =>
+      p.usedCompleteExercises.length >= 2
+  },
+
+  {
+    level: 8,
+    title: 'Combinando Ideias',
+    description:
+      'Resolva 2 exercícios diferentes de combinação.',
+    check: (p) =>
+      p.usedCombineExercises.length >= 2
+  },
+
+  {
+    level: 9,
+    title: 'Organizador de Palavras',
+    description:
+      'Resolva 2 exercícios diferentes de organizar palavras.',
+    check: (p) =>
+      p.usedOrganizeExercises.length >= 2
+  },
+
+  {
+    level: 10,
+    title: 'Pequeno Leitor',
+    description:
+      'Complete 3 exercícios diferentes de leitura.',
+    check: (p) =>
+      p.usedReadingExercises.length >= 3
+  },
+
+  {
+    level: 11,
+    title: 'Desafio de Letras e Sílabas',
+    description:
+      'Pratique 10 letras e 8 sílabas diferentes.',
+    check: (p) =>
+      p.practicedLetters.length >= 10 &&
+      p.practicedSyllables.length >= 8
+  },
+
+  {
+    level: 12,
+    title: 'Vocabulário Crescendo',
+    description:
+      'Pratique 8 palavras diferentes.',
+    check: (p) =>
+      p.practicedWords.length >= 8
+  },
+
+  {
+    level: 13,
+    title: 'Desafio Matemático',
+    description:
+      'Resolva 4 exercícios diferentes de matemática.',
+    check: (p) =>
+      p.usedMathExercises.length >= 4
+  },
+
+  {
+    level: 14,
+    title: 'Formador de Palavras',
+    description:
+      'Resolva 4 exercícios diferentes de formação de palavras.',
+    check: (p) =>
+      p.usedWordExercises.length >= 4
+  },
+
+  {
+    level: 15,
+    title: 'Leitor Avançando',
+    description:
+      'Complete 5 exercícios diferentes de leitura.',
+    check: (p) =>
+      p.usedReadingExercises.length >= 5
+  },
+
+  {
+    level: 16,
+    title: 'Desafio Completo',
+    description:
+      'Pratique 15 letras, 12 sílabas e 10 palavras.',
+    check: (p) =>
+      p.practicedLetters.length >= 15 &&
+      p.practicedSyllables.length >= 12 &&
+      p.practicedWords.length >= 10
+  },
+
+  {
+    level: 17,
+    title: 'Craque da Matemática',
+    description:
+      'Resolva 6 exercícios diferentes de matemática.',
+    check: (p) =>
+      p.usedMathExercises.length >= 6
+  },
+
+  {
+    level: 18,
+    title: 'Mestre dos Jogos',
+    description:
+      'Resolva 5 combinações e organize 5 palavras diferentes.',
+    check: (p) =>
+      p.usedCombineExercises.length >= 5 &&
+      p.usedOrganizeExercises.length >= 5
+  },
+
+  {
+    level: 19,
+    title: 'Quase Alfabetizado',
+    description:
+      'Pratique 20 letras, 15 sílabas e 12 palavras.',
+    check: (p) =>
+      p.practicedLetters.length >= 20 &&
+      p.practicedSyllables.length >= 15 &&
+      p.practicedWords.length >= 12
+  },
+
+  {
+    level: 20,
+    title: 'Grande Desafio',
+    description:
+      'Pratique 25 letras, 20 sílabas, 15 palavras e complete 8 leituras.',
+    check: (p) =>
+      p.practicedLetters.length >= 25 &&
+      p.practicedSyllables.length >= 20 &&
+      p.practicedWords.length >= 15 &&
+      p.usedReadingExercises.length >= 8
+  }
+];
+
+const calculateBonusLevelsUnlocked = (
+  progress: Progress
+): number => {
+  let unlocked = 0;
+
+  for (const requirement of BONUS_REQUIREMENTS) {
+    if (!requirement.check(progress)) {
+      break;
+    }
+
+    unlocked = requirement.level;
+  }
+
+  return unlocked;
+};
+
 export default function App() {
   const [page, setPage] = useState<Page>('role');
 
@@ -1086,21 +1298,23 @@ export default function App() {
       }
     }
 
-    const rewarded = reward(next, label, score);
+    const rewarded =
+  reward(next, label, score);
 
-    return {
-      ...rewarded,
-      bonusLevelsUnlocked:
-        affectsLiteracy
-          ? Math.min(
-              20,
-              Math.max(
-                rewarded.bonusLevelsUnlocked ?? 0,
-                rewarded.activities
-              )
-            )
-          : rewarded.bonusLevelsUnlocked ?? 0
-    };
+const bonusLevelsUnlocked =
+  calculateBonusLevelsUnlocked(
+    rewarded
+  );
+
+return {
+  ...rewarded,
+
+  bonusLevelsUnlocked:
+    Math.max(
+      p.bonusLevelsUnlocked ?? 0,
+      bonusLevelsUnlocked
+    )
+};
   });
 
   confetti({
@@ -1489,7 +1703,7 @@ export default function App() {
   );
 }
 
-  function BonusLevelSelection({
+ function BonusLevelSelection({
   progress,
   onPlay
 }: {
@@ -1497,69 +1711,157 @@ export default function App() {
   onPlay: (level: number) => void;
 }) {
   const unlocked =
-    progress.bonusLevelsUnlocked ?? 0;
+    calculateBonusLevelsUnlocked(
+      progress
+    );
 
   const completed =
-    progress.bonusLevelsCompleted ?? [];
+    Array.isArray(
+      progress.bonusLevelsCompleted
+    )
+      ? progress.bonusLevelsCompleted
+      : [];
 
   return (
     <section>
-      <h1>🎮 Fases Bônus</h1>
+      <h1>
+        🎮 Fases Bônus
+      </h1>
 
       <p className="instruction">
-        Complete atividades para desbloquear novas fases!
+        Aprenda, complete os desafios e desbloqueie novas aventuras!
       </p>
 
       <div
         style={{
           display: 'grid',
           gridTemplateColumns:
-            'repeat(auto-fit, minmax(150px, 1fr))',
-          gap: '15px',
+            'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: '16px',
           marginTop: '25px'
         }}
       >
-        {Array.from(
-          { length: 20 },
-          (_, index) => index + 1
-        ).map((level) => {
-          const available =
-            level <= unlocked;
+        {BONUS_REQUIREMENTS.map(
+          (requirement) => {
+            const level =
+              requirement.level;
 
-          const done =
-            completed.includes(level);
+            const available =
+              level <=
+              unlocked;
 
-          return (
-            <button
-              key={level}
-              disabled={!available}
-              onClick={() =>
-                available && onPlay(level)
-              }
-              style={{
-                padding: '25px',
-                borderRadius: '18px',
-                border: 'none',
-                cursor:
-                  available
-                    ? 'pointer'
-                    : 'not-allowed',
-                opacity:
-                  available
-                    ? 1
-                    : 0.45,
-                fontSize: '18px',
-                fontWeight: 800
-              }}
-            >
-              {done
-                ? `✅ FASE ${level}`
-                : available
-                  ? `🎮 FASE ${level}`
-                  : `🔒 FASE ${level}`}
-            </button>
-          );
-        })}
+            const done =
+              completed.includes(
+                level
+              );
+
+            const requirementDone =
+              requirement.check(
+                progress
+              );
+
+            return (
+              <div
+                key={level}
+                style={{
+                  padding: '20px',
+                  borderRadius: '20px',
+                  background:
+                    available
+                      ? '#ffffff'
+                      : '#eeeeee',
+                  boxShadow:
+                    '0 5px 18px rgba(0,0,0,.12)',
+                  opacity:
+                    available
+                      ? 1
+                      : 0.75
+                }}
+              >
+                <div
+                  style={{
+                    fontSize:
+                      '34px'
+                  }}
+                >
+                  {done
+                    ? '🏆'
+                    : available
+                      ? '🎮'
+                      : '🔒'}
+                </div>
+
+                <h3>
+                  Fase {level}
+                </h3>
+
+                <strong>
+                  {
+                    requirement.title
+                  }
+                </strong>
+
+                <p
+                  style={{
+                    fontSize:
+                      '14px',
+                    margin:
+                      '10px 0'
+                  }}
+                >
+                  {
+                    requirement.description
+                  }
+                </p>
+
+                {done && (
+                  <p>
+                    ✅ CONCLUÍDA
+                  </p>
+                )}
+
+                {!available &&
+                  requirementDone && (
+                    <p
+                      style={{
+                        fontSize:
+                          '13px'
+                      }}
+                    >
+                      ✅ Objetivo cumprido
+                    </p>
+                  )}
+
+                {!available &&
+                  !requirementDone && (
+                    <p
+                      style={{
+                        fontSize:
+                          '13px'
+                      }}
+                    >
+                      🔒 Continue aprendendo
+                    </p>
+                  )}
+
+                {available && (
+                  <button
+                    className="primary"
+                    onClick={() =>
+                      onPlay(
+                        level
+                      )
+                    }
+                  >
+                    {done
+                      ? 'Jogar novamente'
+                      : 'Jogar fase'}
+                  </button>
+                )}
+              </div>
+            );
+          }
+        )}
       </div>
     </section>
   );
