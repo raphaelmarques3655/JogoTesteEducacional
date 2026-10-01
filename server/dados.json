@@ -1504,20 +1504,15 @@
       ]
     },
     "1790852725455-7netui": {
-      "points": 56,
-      "stars": 7,
-      "activities": 7,
-      "letters": 7,
+      "points": 16,
+      "stars": 2,
+      "activities": 2,
+      "letters": 2,
       "syllables": 0,
       "words": 0,
       "practicedLetters": [
         "A",
-        "B",
-        "C",
-        "D",
-        "E",
-        "F",
-        "G"
+        "B"
       ],
       "practicedSyllables": [],
       "practicedWords": [],
@@ -1527,46 +1522,24 @@
       "usedMathExercises": [],
       "usedWordExercises": [],
       "usedReadingExercises": [],
-      "bonusLevelsUnlocked": 7,
-      "bonusLevelsCompleted": [],
+      "bonusLevelsUnlocked": 2,
+      "bonusLevelsCompleted": [
+        2,
+        1
+      ],
       "streak": 1,
       "badges": [
         "primeira"
       ],
       "history": [
         {
-          "label": "Letra G",
-          "at": 1790858697300,
-          "score": 8
-        },
-        {
-          "label": "Letra F",
-          "at": 1790858696436,
-          "score": 8
-        },
-        {
-          "label": "Letra E",
-          "at": 1790858695366,
-          "score": 8
-        },
-        {
-          "label": "Letra D",
-          "at": 1790858694379,
-          "score": 8
-        },
-        {
-          "label": "Letra C",
-          "at": 1790858693445,
-          "score": 8
-        },
-        {
           "label": "Letra B",
-          "at": 1790858692431,
+          "at": 1790858996174,
           "score": 8
         },
         {
           "label": "Letra A",
-          "at": 1790858691187,
+          "at": 1790858994433,
           "score": 8
         }
       ]
@@ -2112,10 +2085,10 @@
       "initialLevel": "Silábico com valor",
       "suggestedLevel": "Silábico com valor",
       "manualLevel": null,
-      "correctAnswers": 16,
+      "correctAnswers": 18,
       "wrongAnswers": 0,
-      "totalAttempts": 16,
-      "updatedAt": "2026-10-01T12:44:57.299Z",
+      "totalAttempts": 18,
+      "updatedAt": "2026-10-01T12:49:56.173Z",
       "levelHistory": [
         {
           "level": "Silábico com valor",
