@@ -1,236 +1,725 @@
-const express = require('express');
-const cors = require('cors');
-const fs = require('fs');
-const path = require('path');
+const express =
+  require('express');
 
-const app = express();
-const PORT = 3001;
+const cors =
+  require('cors');
 
-app.use(cors());
-app.use(express.json({ limit: '2mb' }));
+const db =
+  require('./db');
 
-const DATA_FILE = path.join(__dirname, 'dados.json');
+const app =
+  express();
 
-function estruturaInicial() {
-  return {
-    alunos: [],
-    progresso: {},
-    aprendizagem: {}
-  };
-}
+const PORT =
+  3001;
 
-function normalizarDados(dados) {
-  return {
-    alunos: Array.isArray(dados?.alunos) ? dados.alunos : [],
-    progresso:
-      dados?.progresso && typeof dados.progresso === 'object'
-        ? dados.progresso
-        : {},
-    aprendizagem:
-      dados?.aprendizagem && typeof dados.aprendizagem === 'object'
-        ? dados.aprendizagem
-        : {}
-  };
-}
+app.use(
+  cors()
+);
 
-function carregarDados() {
-  try {
-    if (!fs.existsSync(DATA_FILE)) {
-      const inicial = estruturaInicial();
-      fs.writeFileSync(
-        DATA_FILE,
-        JSON.stringify(inicial, null, 2),
-        'utf8'
+app.use(
+  express.json({
+    limit: '10mb'
+  })
+);
+
+app.get(
+  '/api/teste',
+  async (
+    req,
+    res
+  ) => {
+    try {
+      const [
+        rows
+      ] =
+        await db.query(
+          'SELECT 1 AS ok'
+        );
+
+      res.json({
+        mensagem:
+          'Servidor Alfabetiza+ funcionando com MySQL!',
+
+        banco:
+          rows[0].ok === 1
+      });
+    } catch (
+      error
+    ) {
+      console.error(
+        error
       );
-      return inicial;
-    }
 
-    const conteudo = fs.readFileSync(DATA_FILE, 'utf8');
-    return normalizarDados(JSON.parse(conteudo));
-  } catch (error) {
-    console.error('Erro ao carregar dados:', error);
-    return estruturaInicial();
-  }
-}
-
-function salvarDados(dados) {
-  fs.writeFileSync(
-    DATA_FILE,
-    JSON.stringify(normalizarDados(dados), null, 2),
-    'utf8'
-  );
-}
-
-app.get('/api/teste', (req, res) => {
-  res.json({
-    mensagem: 'Servidor Alfabetiza+ funcionando!'
-  });
-});
-
-app.get('/api/alunos', (req, res) => {
-  const dados = carregarDados();
-  res.json(dados.alunos);
-});
-
-app.post('/api/alunos', (req, res) => {
-  const dados = carregarDados();
-
-  const nome = String(req.body.nome ?? req.body.name ?? '').trim();
-
-  if (!nome) {
-    return res.status(400).json({
-      mensagem: 'O nome do aluno é obrigatório.'
-    });
-  }
-
-  const novoAluno = {
-    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    nome,
-    avatar: req.body.avatar || '🧒',
-    criadoEm: new Date().toISOString()
-  };
-
-  dados.alunos.push(novoAluno);
-
-  // Todo novo aluno já nasce com espaços próprios no servidor.
-  dados.progresso[novoAluno.id] = null;
-  dados.aprendizagem[novoAluno.id] = null;
-
-  salvarDados(dados);
-
-  res.status(201).json(novoAluno);
-});
-
-app.put('/api/alunos/:id', (req, res) => {
-  const dados = carregarDados();
-
-  const aluno = dados.alunos.find(
-    item => String(item.id) === String(req.params.id)
-  );
-
-  if (!aluno) {
-    return res.status(404).json({
-      mensagem: 'Aluno não encontrado.'
-    });
-  }
-
-  if (req.body.nome !== undefined || req.body.name !== undefined) {
-    const novoNome = String(
-      req.body.nome ?? req.body.name
-    ).trim();
-
-    if (!novoNome) {
-      return res.status(400).json({
-        mensagem: 'O nome do aluno não pode ficar vazio.'
+      res.status(
+        500
+      ).json({
+        mensagem:
+          'Erro ao conectar com MySQL'
       });
     }
-
-    aluno.nome = novoNome;
   }
+);
 
-  if (req.body.avatar !== undefined) {
-    const novoAvatar = String(req.body.avatar);
+/* =========================
+   ALUNOS
+========================= */
 
-    if (!novoAvatar.trim()) {
-      return res.status(400).json({
-        mensagem: 'O avatar do aluno não pode ficar vazio.'
+app.get(
+  '/api/alunos',
+  async (
+    req,
+    res
+  ) => {
+    try {
+      const [
+        rows
+      ] =
+        await db.query(
+          `
+          SELECT
+            id,
+            nome,
+            avatar,
+            criado_em
+          FROM alunos
+          ORDER BY criado_em ASC
+          `
+        );
+
+      const alunos =
+        rows.map(
+          (
+            aluno
+          ) => ({
+            id:
+              String(
+                aluno.id
+              ),
+
+            nome:
+              aluno.nome,
+
+            avatar:
+              aluno.avatar,
+
+            criadoEm:
+              aluno.criado_em
+          })
+        );
+
+      res.json(
+        alunos
+      );
+    } catch (
+      error
+    ) {
+      console.error(
+        error
+      );
+
+      res.status(
+        500
+      ).json({
+        mensagem:
+          'Erro ao buscar alunos'
       });
     }
-
-    aluno.avatar = novoAvatar;
   }
+);
 
-  salvarDados(dados);
+app.post(
+  '/api/alunos',
+  async (
+    req,
+    res
+  ) => {
+    try {
+      const nome =
+        String(
+          req.body.nome ??
+            req.body.name ??
+            ''
+        ).trim();
 
-  res.json(aluno);
-});
+      if (
+        !nome
+      ) {
+        return res
+          .status(400)
+          .json({
+            mensagem:
+              'O nome do aluno é obrigatório.'
+          });
+      }
 
-app.delete('/api/alunos/:id', (req, res) => {
-  const dados = carregarDados();
+      const id =
+        `${Date.now()}-${Math.random()
+          .toString(36)
+          .slice(2, 8)}`;
 
-  dados.alunos = dados.alunos.filter(
-    aluno => String(aluno.id) !== String(req.params.id)
-  );
+      const avatar =
+        req.body.avatar ||
+        '🧒';
 
-  delete dados.progresso[req.params.id];
-  delete dados.aprendizagem[req.params.id];
+      const criadoEm =
+        new Date();
 
-  salvarDados(dados);
+      await db.query(
+        `
+        INSERT INTO alunos
+        (
+          id,
+          nome,
+          avatar,
+          criado_em
+        )
+        VALUES (?, ?, ?, ?)
+        `,
+        [
+          id,
+          nome,
+          avatar,
+          criadoEm
+        ]
+      );
 
-  res.json({
-    mensagem: 'Aluno removido'
-  });
-});
+      res
+        .status(201)
+        .json({
+          id,
+          nome,
+          avatar,
 
-app.get('/api/progresso/:id', (req, res) => {
-  const dados = carregarDados();
+          criadoEm:
+            criadoEm.toISOString()
+        });
+    } catch (
+      error
+    ) {
+      console.error(
+        error
+      );
 
-  res.json(
-    Object.prototype.hasOwnProperty.call(
-      dados.progresso,
-      req.params.id
-    )
-      ? dados.progresso[req.params.id]
-      : null
-  );
-});
-
-app.put('/api/progresso/:id', (req, res) => {
-  const dados = carregarDados();
-
-  dados.progresso[req.params.id] = req.body;
-
-  salvarDados(dados);
-
-  res.json(dados.progresso[req.params.id]);
-});
-
-app.get('/api/aprendizagem/:id', (req, res) => {
-  const dados = carregarDados();
-
-  res.json(
-    Object.prototype.hasOwnProperty.call(
-      dados.aprendizagem,
-      req.params.id
-    )
-      ? dados.aprendizagem[req.params.id]
-      : null
-  );
-});
-
-app.put('/api/aprendizagem/:id', (req, res) => {
-  const dados = carregarDados();
-
-  dados.aprendizagem[req.params.id] = req.body;
-
-  salvarDados(dados);
-
-  res.json(dados.aprendizagem[req.params.id]);
-});
-
-app.get('/api/alunos/:id/completo', (req, res) => {
-  const dados = carregarDados();
-
-  const aluno = dados.alunos.find(
-    item => String(item.id) === String(req.params.id)
-  );
-
-  if (!aluno) {
-    return res.status(404).json({
-      mensagem: 'Aluno não encontrado.'
-    });
+      res.status(
+        500
+      ).json({
+        mensagem:
+          'Erro ao criar aluno'
+      });
+    }
   }
+);
 
-  res.json({
-    aluno,
-    progresso: dados.progresso[req.params.id] ?? null,
-    aprendizagem: dados.aprendizagem[req.params.id] ?? null
-  });
-});
+app.put(
+  '/api/alunos/:id',
+  async (
+    req,
+    res
+  ) => {
+    try {
+      const [
+        rows
+      ] =
+        await db.query(
+          `
+          SELECT *
+          FROM alunos
+          WHERE id = ?
+          `,
+          [
+            req.params.id
+          ]
+        );
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log('');
-  console.log('Servidor Alfabetiza+ rodando!');
-  console.log(`Local: http://localhost:${PORT}`);
-  console.log(`Rede: http://SEU_IP:${PORT}`);
-});
+      if (
+        rows.length ===
+        0
+      ) {
+        return res
+          .status(404)
+          .json({
+            mensagem:
+              'Aluno não encontrado.'
+          });
+      }
+
+      const aluno =
+        rows[0];
+
+      const nome =
+        req.body.nome ??
+        req.body.name ??
+        aluno.nome;
+
+      const avatar =
+        req.body.avatar ??
+        aluno.avatar;
+
+      await db.query(
+        `
+        UPDATE alunos
+        SET
+          nome = ?,
+          avatar = ?
+        WHERE id = ?
+        `,
+        [
+          String(
+            nome
+          ).trim(),
+
+          avatar,
+
+          req.params.id
+        ]
+      );
+
+      res.json({
+        id:
+          req.params.id,
+
+        nome:
+          String(
+            nome
+          ).trim(),
+
+        avatar,
+
+        criadoEm:
+          aluno.criado_em
+      });
+    } catch (
+      error
+    ) {
+      console.error(
+        error
+      );
+
+      res.status(
+        500
+      ).json({
+        mensagem:
+          'Erro ao atualizar aluno'
+      });
+    }
+  }
+);
+
+app.delete(
+  '/api/alunos/:id',
+  async (
+    req,
+    res
+  ) => {
+    try {
+      await db.query(
+        `
+        DELETE FROM alunos
+        WHERE id = ?
+        `,
+        [
+          req.params.id
+        ]
+      );
+
+      res.json({
+        mensagem:
+          'Aluno removido'
+      });
+    } catch (
+      error
+    ) {
+      console.error(
+        error
+      );
+
+      res.status(
+        500
+      ).json({
+        mensagem:
+          'Erro ao remover aluno'
+      });
+    }
+  }
+);
+
+/* =========================
+   PROGRESSO
+========================= */
+
+app.get(
+  '/api/progresso/:id',
+  async (
+    req,
+    res
+  ) => {
+    try {
+      const [
+        rows
+      ] =
+        await db.query(
+          `
+          SELECT dados
+          FROM progresso
+          WHERE aluno_id = ?
+          `,
+          [
+            req.params.id
+          ]
+        );
+
+      if (
+        rows.length ===
+        0
+      ) {
+        return res.json(
+          null
+        );
+      }
+
+      const dados =
+        typeof rows[0]
+          .dados ===
+        'string'
+          ? JSON.parse(
+              rows[0]
+                .dados
+            )
+          : rows[0]
+              .dados;
+
+      res.json(
+        dados
+      );
+    } catch (
+      error
+    ) {
+      console.error(
+        error
+      );
+
+      res.status(
+        500
+      ).json({
+        mensagem:
+          'Erro ao buscar progresso'
+      });
+    }
+  }
+);
+
+app.put(
+  '/api/progresso/:id',
+  async (
+    req,
+    res
+  ) => {
+    try {
+      const dados =
+        JSON.stringify(
+          req.body
+        );
+
+      await db.query(
+        `
+        INSERT INTO progresso
+        (
+          aluno_id,
+          dados
+        )
+        VALUES (?, ?)
+
+        ON DUPLICATE KEY UPDATE
+          dados = VALUES(dados)
+        `,
+        [
+          req.params.id,
+          dados
+        ]
+      );
+
+      res.json(
+        req.body
+      );
+    } catch (
+      error
+    ) {
+      console.error(
+        error
+      );
+
+      res.status(
+        500
+      ).json({
+        mensagem:
+          'Erro ao salvar progresso'
+      });
+    }
+  }
+);
+
+/* =========================
+   APRENDIZAGEM
+========================= */
+
+app.get(
+  '/api/aprendizagem/:id',
+  async (
+    req,
+    res
+  ) => {
+    try {
+      const [
+        rows
+      ] =
+        await db.query(
+          `
+          SELECT dados
+          FROM aprendizagem
+          WHERE aluno_id = ?
+          `,
+          [
+            req.params.id
+          ]
+        );
+
+      if (
+        rows.length ===
+        0
+      ) {
+        return res.json(
+          null
+        );
+      }
+
+      const dados =
+        typeof rows[0]
+          .dados ===
+        'string'
+          ? JSON.parse(
+              rows[0]
+                .dados
+            )
+          : rows[0]
+              .dados;
+
+      res.json(
+        dados
+      );
+    } catch (
+      error
+    ) {
+      console.error(
+        error
+      );
+
+      res.status(
+        500
+      ).json({
+        mensagem:
+          'Erro ao buscar aprendizagem'
+      });
+    }
+  }
+);
+
+app.put(
+  '/api/aprendizagem/:id',
+  async (
+    req,
+    res
+  ) => {
+    try {
+      const dados =
+        JSON.stringify(
+          req.body
+        );
+
+      await db.query(
+        `
+        INSERT INTO aprendizagem
+        (
+          aluno_id,
+          dados
+        )
+        VALUES (?, ?)
+
+        ON DUPLICATE KEY UPDATE
+          dados = VALUES(dados)
+        `,
+        [
+          req.params.id,
+          dados
+        ]
+      );
+
+      res.json(
+        req.body
+      );
+    } catch (
+      error
+    ) {
+      console.error(
+        error
+      );
+
+      res.status(
+        500
+      ).json({
+        mensagem:
+          'Erro ao salvar aprendizagem'
+      });
+    }
+  }
+);
+
+/* =========================
+   COMPLETO
+========================= */
+
+app.get(
+  '/api/alunos/:id/completo',
+  async (
+    req,
+    res
+  ) => {
+    try {
+      const [
+        alunoRows
+      ] =
+        await db.query(
+          `
+          SELECT *
+          FROM alunos
+          WHERE id = ?
+          `,
+          [
+            req.params.id
+          ]
+        );
+
+      if (
+        alunoRows.length ===
+        0
+      ) {
+        return res
+          .status(404)
+          .json({
+            mensagem:
+              'Aluno não encontrado.'
+          });
+      }
+
+      const [
+        progressoRows
+      ] =
+        await db.query(
+          `
+          SELECT dados
+          FROM progresso
+          WHERE aluno_id = ?
+          `,
+          [
+            req.params.id
+          ]
+        );
+
+      const [
+        aprendizagemRows
+      ] =
+        await db.query(
+          `
+          SELECT dados
+          FROM aprendizagem
+          WHERE aluno_id = ?
+          `,
+          [
+            req.params.id
+          ]
+        );
+
+      const aluno =
+        alunoRows[0];
+
+      const progresso =
+        progressoRows.length
+          ? typeof progressoRows[0]
+                .dados ===
+              'string'
+            ? JSON.parse(
+                progressoRows[0]
+                  .dados
+              )
+            : progressoRows[0]
+                .dados
+          : null;
+
+      const aprendizagem =
+        aprendizagemRows.length
+          ? typeof aprendizagemRows[0]
+                .dados ===
+              'string'
+            ? JSON.parse(
+                aprendizagemRows[0]
+                  .dados
+              )
+            : aprendizagemRows[0]
+                .dados
+          : null;
+
+      res.json({
+        aluno: {
+          id:
+            String(
+              aluno.id
+            ),
+
+          nome:
+            aluno.nome,
+
+          avatar:
+            aluno.avatar,
+
+          criadoEm:
+            aluno.criado_em
+        },
+
+        progresso,
+
+        aprendizagem
+      });
+    } catch (
+      error
+    ) {
+      console.error(
+        error
+      );
+
+      res.status(
+        500
+      ).json({
+        mensagem:
+          'Erro ao buscar dados completos'
+      });
+    }
+  }
+);
+
+app.listen(
+  PORT,
+  '0.0.0.0',
+  () => {
+    console.log(
+      ''
+    );
+
+    console.log(
+      'Servidor Alfabetiza+ rodando com MySQL!'
+    );
+
+    console.log(
+      `Porta: ${PORT}`
+    );
+  }
+);

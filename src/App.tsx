@@ -213,7 +213,8 @@ type LearningState = {
 };
 
 const STUDENTS_KEY = 'alfabetizacao-students';
-const API_URL = `http://${window.location.hostname}:3001/api`;
+const API_URL =
+  `${window.location.protocol}//${window.location.hostname}:3001/api`;
 const TEACHER_PASSWORD_KEY = 'alfabetizacao-teacher-password';
 const DEFAULT_TEACHER_PASSWORD = '1234';
 
@@ -244,6 +245,81 @@ const initialLearningState: LearningState = {
 const studentProgressKey = (id: string) =>
   `alfabetizacao-progress-${id}`;
 
+const normalizeProgress = (
+  data: Partial<Progress> | null | undefined
+): Progress => {
+  const base = cloneInitialProgress();
+
+  if (!data) {
+    return base;
+  }
+
+  return {
+    ...base,
+    ...data,
+
+    practicedLetters:
+      Array.isArray(data.practicedLetters)
+        ? data.practicedLetters
+        : [],
+
+    practicedSyllables:
+      Array.isArray(data.practicedSyllables)
+        ? data.practicedSyllables
+        : [],
+
+    practicedWords:
+      Array.isArray(data.practicedWords)
+        ? data.practicedWords
+        : [],
+
+    usedCombineExercises:
+      Array.isArray(data.usedCombineExercises)
+        ? data.usedCombineExercises
+        : [],
+
+    usedOrganizeExercises:
+      Array.isArray(data.usedOrganizeExercises)
+        ? data.usedOrganizeExercises
+        : [],
+
+    usedCompleteExercises:
+      Array.isArray(data.usedCompleteExercises)
+        ? data.usedCompleteExercises
+        : [],
+
+    usedMathExercises:
+      Array.isArray(data.usedMathExercises)
+        ? data.usedMathExercises
+        : [],
+
+    usedWordExercises:
+      Array.isArray(data.usedWordExercises)
+        ? data.usedWordExercises
+        : [],
+
+    usedReadingExercises:
+      Array.isArray(data.usedReadingExercises)
+        ? data.usedReadingExercises
+        : [],
+
+    bonusLevelsUnlocked:
+      typeof data.bonusLevelsUnlocked === 'number'
+        ? data.bonusLevelsUnlocked
+        : 0,
+
+    bonusLevelsCompleted:
+      Array.isArray(data.bonusLevelsCompleted)
+        ? data.bonusLevelsCompleted
+        : [],
+
+    history:
+      Array.isArray(data.history)
+        ? data.history
+        : []
+  };
+};
+
 const studentLearningKey = (id: string) =>
   `alfabetizacao-learning-${id}`;
 
@@ -256,55 +332,34 @@ const loadStudents = (): Student[] => {
   }
 };
 
-const loadStudentProgressLocal = (id: string): Progress => {
+const loadStudentProgressLocal = (
+  id: string
+): Progress => {
   try {
-    const saved = localStorage.getItem(studentProgressKey(id));
+    const saved =
+      localStorage.getItem(
+        studentProgressKey(id)
+      );
 
     if (!saved) {
       return cloneInitialProgress();
     }
 
-    const parsed = JSON.parse(saved);
+    const parsed =
+      JSON.parse(saved);
 
-    return {
-      ...cloneInitialProgress(),
-      ...parsed,
-      practicedLetters: Array.isArray(parsed.practicedLetters)
-        ? parsed.practicedLetters
-        : [],
-      practicedSyllables: Array.isArray(parsed.practicedSyllables)
-        ? parsed.practicedSyllables
-        : [],
-      practicedWords: Array.isArray(parsed.practicedWords)
-        ? parsed.practicedWords
-        : [],
-      usedCombineExercises: Array.isArray(parsed.usedCombineExercises)
-        ? parsed.usedCombineExercises
-        : [],
-      usedOrganizeExercises: Array.isArray(parsed.usedOrganizeExercises)
-        ? parsed.usedOrganizeExercises
-        : [],
-      usedCompleteExercises: Array.isArray(parsed.usedCompleteExercises)
-        ? parsed.usedCompleteExercises
-        : [],
-      usedMathExercises: Array.isArray(parsed.usedMathExercises)
-        ? parsed.usedMathExercises
-        : [],
-      usedWordExercises: Array.isArray(parsed.usedWordExercises)
-        ? parsed.usedWordExercises
-        : [],
-      usedReadingExercises: Array.isArray(parsed.usedReadingExercises)
-        ? parsed.usedReadingExercises
-        : [],
-      history: Array.isArray(parsed.history)
-        ? parsed.history
-        : []
-    };
-  } catch {
+    return normalizeProgress(
+      parsed
+    );
+  } catch (error) {
+    console.error(
+      'Erro ao carregar progresso local:',
+      error
+    );
+
     return cloneInitialProgress();
   }
 };
-
 const loadLearningStateLocal = (id: string): LearningState => {
   try {
     const saved = localStorage.getItem(studentLearningKey(id));
@@ -326,93 +381,154 @@ const loadLearningStateLocal = (id: string): LearningState => {
   }
 };
 
-const loadStudentProgress = async (id: string): Promise<Progress> => {
+const loadStudentProgress = async (
+  id: string
+): Promise<Progress> => {
   try {
-    const response = await fetch(`${API_URL}/progresso/${id}`);
+    const response =
+      await fetch(
+        `${API_URL}/progresso/${id}`,
+        {
+          method: 'GET',
+
+          headers: {
+            Accept:
+              'application/json'
+          },
+
+          cache:
+            'no-store'
+        }
+      );
 
     if (!response.ok) {
-      throw new Error('Erro ao carregar progresso');
+      throw new Error(
+        `Servidor respondeu ${response.status}`
+      );
     }
 
-    const data = await response.json();
+    const data =
+      await response.json();
 
+    /*
+      Se existe progresso no MySQL,
+      ele SEMPRE tem prioridade.
+    */
     if (data) {
-      return {
-        ...cloneInitialProgress(),
-        ...data,
-        practicedLetters: Array.isArray(data.practicedLetters)
-          ? data.practicedLetters
-          : [],
-        practicedSyllables: Array.isArray(data.practicedSyllables)
-          ? data.practicedSyllables
-          : [],
-        practicedWords: Array.isArray(data.practicedWords)
-          ? data.practicedWords
-          : [],
-        usedCombineExercises: Array.isArray(data.usedCombineExercises)
-          ? data.usedCombineExercises
-          : [],
-        usedOrganizeExercises: Array.isArray(data.usedOrganizeExercises)
-          ? data.usedOrganizeExercises
-          : [],
-        usedCompleteExercises: Array.isArray(data.usedCompleteExercises)
-          ? data.usedCompleteExercises
-          : [],
-        usedMathExercises: Array.isArray(data.usedMathExercises)
-          ? data.usedMathExercises
-          : [],
-        usedWordExercises: Array.isArray(data.usedWordExercises)
-          ? data.usedWordExercises
-          : [],
-        usedReadingExercises: Array.isArray(data.usedReadingExercises)
-          ? data.usedReadingExercises
-          : [],
-          bonusLevelsUnlocked:
-  typeof data.bonusLevelsUnlocked === 'number'
-    ? data.bonusLevelsUnlocked
-    : 0,
+      const serverProgress =
+        normalizeProgress(data);
 
-bonusLevelsCompleted: Array.isArray(data.bonusLevelsCompleted)
-  ? data.bonusLevelsCompleted
-  : [],
-          bonusLevelsUnlocked:
-  typeof parsed.bonusLevelsUnlocked === 'number'
-    ? parsed.bonusLevelsUnlocked
-    : 0,
+      // Atualiza o backup deste computador
+      localStorage.setItem(
+        studentProgressKey(id),
+        JSON.stringify(
+          serverProgress
+        )
+      );
 
-bonusLevelsCompleted: Array.isArray(parsed.bonusLevelsCompleted)
-  ? parsed.bonusLevelsCompleted
-  : [],
-  
-        history: Array.isArray(data.history) ? data.history : []
-      };
+      console.log(
+        '✅ Progresso carregado do MySQL:',
+        id
+      );
+
+      return serverProgress;
     }
 
-    // Migra automaticamente o progresso antigo salvo no navegador do host.
-    const localProgress = loadStudentProgressLocal(id);
-    await saveStudentProgress(id, localProgress);
+    /*
+      Se ainda não existe no MySQL,
+      procura progresso antigo deste PC.
+    */
+    const localProgress =
+      loadStudentProgressLocal(
+        id
+      );
+
+    /*
+      Migra automaticamente
+      o progresso antigo para o MySQL.
+    */
+    await saveStudentProgress(
+      id,
+      localProgress
+    );
+
+    console.log(
+      '📤 Progresso local migrado para MySQL:',
+      id
+    );
+
     return localProgress;
   } catch (error) {
-    console.error('Erro ao buscar progresso:', error);
-    return loadStudentProgressLocal(id);
+    console.error(
+      '❌ Erro ao carregar progresso do MySQL:',
+      error
+    );
+
+    /*
+      Servidor indisponível:
+      usa backup local.
+    */
+    return loadStudentProgressLocal(
+      id
+    );
   }
 };
 
-const saveStudentProgress = async (id: string, state: Progress) => {
+const saveStudentProgress = async (
+  id: string,
+  state: Progress
+) => {
+  const normalized =
+    normalizeProgress(state);
+
+  // Backup local
   try {
-    const response = await fetch(`${API_URL}/progresso/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(state)
-    });
+    localStorage.setItem(
+      studentProgressKey(id),
+      JSON.stringify(normalized)
+    );
+  } catch (error) {
+    console.error(
+      'Erro ao salvar backup local:',
+      error
+    );
+  }
+
+  // Banco MySQL
+  try {
+    const response =
+      await fetch(
+        `${API_URL}/progresso/${id}`,
+        {
+          method: 'PUT',
+
+          headers: {
+            'Content-Type':
+              'application/json'
+          },
+
+          body:
+            JSON.stringify(
+              normalized
+            )
+        }
+      );
 
     if (!response.ok) {
-      throw new Error('Erro ao salvar progresso');
+      throw new Error(
+        `Servidor respondeu ${response.status}`
+      );
     }
+
+    console.log(
+      '✅ Progresso salvo no MySQL:',
+      id
+    );
   } catch (error) {
-    console.error('Erro ao salvar progresso:', error);
+    console.error(
+      '❌ Erro ao salvar progresso no MySQL:',
+      error
+    );
   }
 };
 
