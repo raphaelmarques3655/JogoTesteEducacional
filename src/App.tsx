@@ -411,7 +411,7 @@ const loadStudentProgress = async (
       await response.json();
 
     /*
-      Se existe progresso no MySQL,
+      Se existe progresso no servidor,
       ele SEMPRE tem prioridade.
     */
     if (data) {
@@ -435,7 +435,7 @@ const loadStudentProgress = async (
     }
 
     /*
-      Se ainda não existe no MySQL,
+      Se ainda não existe no servidor,
       procura progresso antigo deste PC.
     */
     const localProgress =
@@ -445,7 +445,7 @@ const loadStudentProgress = async (
 
     /*
       Migra automaticamente
-      o progresso antigo para o MySQL.
+      o progresso antigo para o servidor.
     */
     await saveStudentProgress(
       id,
