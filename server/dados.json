@@ -292,6 +292,10 @@
       "usedOrganizeExercises": [],
       "usedCompleteExercises": [],
       "usedMathExercises": [],
+      "usedWordExercises": [],
+      "usedReadingExercises": [],
+      "bonusLevelsUnlocked": 0,
+      "bonusLevelsCompleted": [],
       "streak": 1,
       "badges": [
         "primeira",
@@ -1530,12 +1534,12 @@
       ]
     },
     "1790852725455-7netui": {
-      "points": 152,
-      "stars": 17,
-      "activities": 17,
+      "points": 164,
+      "stars": 18,
+      "activities": 18,
       "letters": 7,
       "syllables": 0,
-      "words": 2,
+      "words": 3,
       "practicedLetters": [
         "A",
         "B",
@@ -1548,10 +1552,12 @@
       "practicedSyllables": [],
       "practicedWords": [
         "NARIZ",
-        "LÁPIS"
+        "LÁPIS",
+        "TARTARUGA"
       ],
       "usedCombineExercises": [
-        "combine-33-NARIZ"
+        "combine-33-NARIZ",
+        "combine-75-TARTARUGA"
       ],
       "usedOrganizeExercises": [
         "organize-LÁPIS"
@@ -1573,6 +1579,11 @@
         "super"
       ],
       "history": [
+        {
+          "label": "Jogo: imagem e palavra TARTARUGA",
+          "at": 1793056634194,
+          "score": 12
+        },
         {
           "label": "Letra F",
           "at": 1793054275892,
@@ -2267,10 +2278,10 @@
       "initialLevel": "Silábico com valor",
       "suggestedLevel": "Silábico com valor",
       "manualLevel": null,
-      "correctAnswers": 81,
+      "correctAnswers": 82,
       "wrongAnswers": 2,
-      "totalAttempts": 83,
-      "updatedAt": "2026-10-26T22:37:55.891Z",
+      "totalAttempts": 84,
+      "updatedAt": "2026-10-26T23:17:14.192Z",
       "levelHistory": [
         {
           "level": "Silábico com valor",
