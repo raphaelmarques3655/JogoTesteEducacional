@@ -1530,10 +1530,10 @@
       ]
     },
     "1790852725455-7netui": {
-      "points": 80,
-      "stars": 8,
-      "activities": 8,
-      "letters": 5,
+      "points": 152,
+      "stars": 17,
+      "activities": 17,
+      "letters": 7,
       "syllables": 0,
       "words": 2,
       "practicedLetters": [
@@ -1541,7 +1541,9 @@
         "B",
         "C",
         "F",
-        "P"
+        "P",
+        "D",
+        "E"
       ],
       "practicedSyllables": [],
       "practicedWords": [
@@ -1560,15 +1562,62 @@
       ],
       "usedWordExercises": [],
       "usedReadingExercises": [],
-      "bonusLevelsUnlocked": 1,
+      "bonusLevelsUnlocked": 2,
       "bonusLevelsCompleted": [
-        1
+        1,
+        2
       ],
       "streak": 1,
       "badges": [
-        "primeira"
+        "primeira",
+        "super"
       ],
       "history": [
+        {
+          "label": "Letra F",
+          "at": 1793054275892,
+          "score": 8
+        },
+        {
+          "label": "Letra E",
+          "at": 1793054274940,
+          "score": 8
+        },
+        {
+          "label": "Letra D",
+          "at": 1793054274019,
+          "score": 8
+        },
+        {
+          "label": "Letra C",
+          "at": 1793054272979,
+          "score": 8
+        },
+        {
+          "label": "Letra B",
+          "at": 1793054271980,
+          "score": 8
+        },
+        {
+          "label": "Letra A",
+          "at": 1793054270756,
+          "score": 8
+        },
+        {
+          "label": "Letra A",
+          "at": 1793054270603,
+          "score": 8
+        },
+        {
+          "label": "Letra A",
+          "at": 1793054270156,
+          "score": 8
+        },
+        {
+          "label": "Letra A",
+          "at": 1793054269668,
+          "score": 8
+        },
         {
           "label": "Jogo de matemática",
           "at": 1790871109332,
@@ -2218,10 +2267,10 @@
       "initialLevel": "Silábico com valor",
       "suggestedLevel": "Silábico com valor",
       "manualLevel": null,
-      "correctAnswers": 72,
+      "correctAnswers": 81,
       "wrongAnswers": 2,
-      "totalAttempts": 74,
-      "updatedAt": "2026-10-01T16:11:45.726Z",
+      "totalAttempts": 83,
+      "updatedAt": "2026-10-26T22:37:55.891Z",
       "levelHistory": [
         {
           "level": "Silábico com valor",

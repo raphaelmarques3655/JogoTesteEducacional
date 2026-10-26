@@ -1014,7 +1014,9 @@ export default function App() {
   useEffect(() => {
     const carregarAlunos = async () => {
       try {
-        const response = await fetch(`${API_URL}/alunos`, {\n          cache: 'no-store'\n        });
+        const response = await fetch(`${API_URL}/alunos`, {
+  cache: 'no-store'
+});
 
         if (!response.ok) {
           throw new Error('Erro ao carregar alunos');
