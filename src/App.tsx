@@ -427,7 +427,7 @@ const loadStudentProgress = async (
       );
 
       console.log(
-        '✅ Progresso carregado do MySQL:',
+        '✅ Progresso carregado do servidor:',
         id
       );
 
@@ -453,14 +453,14 @@ const loadStudentProgress = async (
     );
 
     console.log(
-      '📤 Progresso local migrado para MySQL:',
+      '📤 Progresso local migrado para o servidor:',
       id
     );
 
     return localProgress;
   } catch (error) {
     console.error(
-      '❌ Erro ao carregar progresso do MySQL:',
+      '❌ Erro ao carregar progresso do servidor:',
       error
     );
 
@@ -494,7 +494,7 @@ const saveStudentProgress = async (
     );
   }
 
-  // Banco MySQL
+  // Servidor central (dados.json)
   try {
     const response =
       await fetch(
@@ -521,12 +521,12 @@ const saveStudentProgress = async (
     }
 
     console.log(
-      '✅ Progresso salvo no MySQL:',
+      '✅ Progresso salvo no servidor:',
       id
     );
   } catch (error) {
     console.error(
-      '❌ Erro ao salvar progresso no MySQL:',
+      '❌ Erro ao salvar progresso no servidor:',
       error
     );
   }
@@ -1014,7 +1014,7 @@ export default function App() {
   useEffect(() => {
     const carregarAlunos = async () => {
       try {
-        const response = await fetch(`${API_URL}/alunos`);
+        const response = await fetch(`${API_URL}/alunos`, {\n          cache: 'no-store'\n        });
 
         if (!response.ok) {
           throw new Error('Erro ao carregar alunos');
