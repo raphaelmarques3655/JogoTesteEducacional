@@ -563,12 +563,13 @@ JogoTesteEducacional
 
 # Autores
 
-**Guilherme Rinaldi da Silva**
 
 **Raphael Marques**
 
 **Gabriel Dal Ponte**
 
 **Fabio Gustavo**
+
+**Guilherme Rinaldi da Silva**
 
 Projeto desenvolvido no contexto do curso de **Análise e Desenvolvimento de Sistemas — SENAI**.
