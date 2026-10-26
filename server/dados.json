@@ -480,158 +480,7 @@
         "super",
         "letras"
       ],
-      "history": [
-        {
-          "label": "Jogo: complete a palavra",
-          "at": 1790267519850,
-          "score": 12
-        },
-        {
-          "label": "Jogo: complete VACA",
-          "at": 1790267515946,
-          "score": 12
-        },
-        {
-          "label": "Jogo: complete VACA",
-          "at": 1790267508169,
-          "score": 12
-        },
-        {
-          "label": "Jogo: complete VACA",
-          "at": 1790267503500,
-          "score": 12
-        },
-        {
-          "label": "Jogo: complete VACA",
-          "at": 1790267495491,
-          "score": 12
-        },
-        {
-          "label": "Jogo: complete VACA",
-          "at": 1790267488245,
-          "score": 12
-        },
-        {
-          "label": "Jogo: encontre a letra V",
-          "at": 1790267484916,
-          "score": 10
-        },
-        {
-          "label": "Jogo: imagem e palavra HIPOPÓTAMO",
-          "at": 1790267483083,
-          "score": 12
-        },
-        {
-          "label": "Jogo: imagem e palavra TATU",
-          "at": 1790267479968,
-          "score": 12
-        },
-        {
-          "label": "Jogo: encontre a letra M",
-          "at": 1790267477380,
-          "score": 10
-        },
-        {
-          "label": "Leitura da palavra BANANA",
-          "at": 1790267440438,
-          "score": 15
-        },
-        {
-          "label": "Matemática",
-          "at": 1790267425855,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra Z",
-          "at": 1790267393980,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra Y",
-          "at": 1790267383976,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra X",
-          "at": 1790267375110,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra W",
-          "at": 1790267362924,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra V",
-          "at": 1790267307943,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra U",
-          "at": 1790267277469,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra T",
-          "at": 1790267247140,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra S",
-          "at": 1790267206685,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra R",
-          "at": 1790267164397,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra Q",
-          "at": 1790267154077,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra P",
-          "at": 1790267145481,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra O",
-          "at": 1790267133679,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra N",
-          "at": 1790267128683,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra M",
-          "at": 1790267125051,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra L",
-          "at": 1790267121117,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra K",
-          "at": 1790267117575,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra J",
-          "at": 1790267113399,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra I",
-          "at": 1790267104619,
-          "score": 12
-        }
-      ]
+      "history": []
     },
     "1789641873773-97a9y5": {
       "points": 0,
@@ -1089,158 +938,7 @@
         "super",
         "letras"
       ],
-      "history": [
-        {
-          "label": "Formação da palavra GATO",
-          "at": 1790275578063,
-          "score": 15
-        },
-        {
-          "label": "Formação da palavra CASA",
-          "at": 1790275576026,
-          "score": 15
-        },
-        {
-          "label": "Letra A",
-          "at": 1790266914480,
-          "score": 8
-        },
-        {
-          "label": "Letra A",
-          "at": 1790266914263,
-          "score": 8
-        },
-        {
-          "label": "Letra A",
-          "at": 1790266914061,
-          "score": 8
-        },
-        {
-          "label": "Letra A",
-          "at": 1790266913857,
-          "score": 8
-        },
-        {
-          "label": "Letra A",
-          "at": 1790266913652,
-          "score": 8
-        },
-        {
-          "label": "Letra A",
-          "at": 1790266913434,
-          "score": 8
-        },
-        {
-          "label": "Letra A",
-          "at": 1790266913218,
-          "score": 8
-        },
-        {
-          "label": "Letra A",
-          "at": 1790266913016,
-          "score": 8
-        },
-        {
-          "label": "Letra A",
-          "at": 1790266912807,
-          "score": 8
-        },
-        {
-          "label": "Letra A",
-          "at": 1790266912582,
-          "score": 8
-        },
-        {
-          "label": "Letra A",
-          "at": 1790266912354,
-          "score": 8
-        },
-        {
-          "label": "Jogo: complete URSO",
-          "at": 1790266893332,
-          "score": 12
-        },
-        {
-          "label": "Jogo: complete a palavra",
-          "at": 1790266882024,
-          "score": 12
-        },
-        {
-          "label": "Matemática",
-          "at": 1790266857289,
-          "score": 12
-        },
-        {
-          "label": "Matemática",
-          "at": 1790266855721,
-          "score": 12
-        },
-        {
-          "label": "Matemática",
-          "at": 1790266852785,
-          "score": 12
-        },
-        {
-          "label": "Matemática",
-          "at": 1790266851091,
-          "score": 12
-        },
-        {
-          "label": "Matemática",
-          "at": 1790266849437,
-          "score": 12
-        },
-        {
-          "label": "Matemática",
-          "at": 1790266847757,
-          "score": 12
-        },
-        {
-          "label": "Matemática",
-          "at": 1790266846123,
-          "score": 12
-        },
-        {
-          "label": "Matemática",
-          "at": 1790266844575,
-          "score": 12
-        },
-        {
-          "label": "Matemática",
-          "at": 1790266842305,
-          "score": 12
-        },
-        {
-          "label": "Matemática",
-          "at": 1790266840439,
-          "score": 12
-        },
-        {
-          "label": "Matemática",
-          "at": 1790266837977,
-          "score": 12
-        },
-        {
-          "label": "Matemática",
-          "at": 1790266834159,
-          "score": 12
-        },
-        {
-          "label": "Matemática",
-          "at": 1790266831497,
-          "score": 12
-        },
-        {
-          "label": "Matemática",
-          "at": 1790266828869,
-          "score": 12
-        },
-        {
-          "label": "Matemática",
-          "at": 1790266826080,
-          "score": 12
-        }
-      ]
+      "history": []
     },
     "1790267736335-5hdn6z": {
       "points": 72,
@@ -1265,33 +963,7 @@
       "badges": [
         "primeira"
       ],
-      "history": [
-        {
-          "label": "Formação da palavra GATO",
-          "at": 1790273373856,
-          "score": 15
-        },
-        {
-          "label": "Formação da palavra CASA",
-          "at": 1790273371607,
-          "score": 15
-        },
-        {
-          "label": "Formação da palavra GATO",
-          "at": 1790273182674,
-          "score": 15
-        },
-        {
-          "label": "Formação da palavra CASA",
-          "at": 1790273180455,
-          "score": 15
-        },
-        {
-          "label": "Jogo de matemática",
-          "at": 1790269376657,
-          "score": 12
-        }
-      ]
+      "history": []
     },
     "1790269959310-e2xqfc": {
       "points": 0,
@@ -1380,158 +1052,7 @@
         "super",
         "letras"
       ],
-      "history": [
-        {
-          "label": "Formação da palavra MOTO",
-          "at": 1790275910295,
-          "score": 15
-        },
-        {
-          "label": "Formação da palavra BOCA",
-          "at": 1790275907757,
-          "score": 15
-        },
-        {
-          "label": "Formação da palavra RATO",
-          "at": 1790275905482,
-          "score": 15
-        },
-        {
-          "label": "Formação da palavra SAPO",
-          "at": 1790275023850,
-          "score": 15
-        },
-        {
-          "label": "Formação da palavra PATO",
-          "at": 1790275020892,
-          "score": 15
-        },
-        {
-          "label": "Formação da palavra BOLA",
-          "at": 1790275018749,
-          "score": 15
-        },
-        {
-          "label": "Formação da palavra GATO",
-          "at": 1790275015224,
-          "score": 15
-        },
-        {
-          "label": "Formação da palavra CASA",
-          "at": 1790275011971,
-          "score": 15
-        },
-        {
-          "label": "Escrita da letra J",
-          "at": 1790274971638,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra I",
-          "at": 1790274967190,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra H",
-          "at": 1790274942264,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra G",
-          "at": 1790274935244,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra F",
-          "at": 1790274928393,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra E",
-          "at": 1790274922195,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra D",
-          "at": 1790274913742,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra C",
-          "at": 1790274906070,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra B",
-          "at": 1790274901006,
-          "score": 12
-        },
-        {
-          "label": "Escrita da letra A",
-          "at": 1790274891983,
-          "score": 12
-        },
-        {
-          "label": "Formação da palavra BOLA",
-          "at": 1790274857151,
-          "score": 15
-        },
-        {
-          "label": "Formação da palavra GATO",
-          "at": 1790274855299,
-          "score": 15
-        },
-        {
-          "label": "Formação da palavra CASA",
-          "at": 1790274853229,
-          "score": 15
-        },
-        {
-          "label": "Formação da palavra PATO",
-          "at": 1790274692290,
-          "score": 15
-        },
-        {
-          "label": "Formação da palavra BOLA",
-          "at": 1790274687724,
-          "score": 15
-        },
-        {
-          "label": "Formação da palavra GATO",
-          "at": 1790274677096,
-          "score": 15
-        },
-        {
-          "label": "Formação da palavra CASA",
-          "at": 1790274667791,
-          "score": 15
-        },
-        {
-          "label": "Leitura da palavra LEÃO",
-          "at": 1790274582126,
-          "score": 15
-        },
-        {
-          "label": "Leitura da palavra OVO",
-          "at": 1790274580050,
-          "score": 15
-        },
-        {
-          "label": "Leitura da palavra UVA",
-          "at": 1790274578197,
-          "score": 15
-        },
-        {
-          "label": "Leitura da palavra TATU",
-          "at": 1790274575300,
-          "score": 15
-        },
-        {
-          "label": "Leitura da palavra VACA",
-          "at": 1790274571588,
-          "score": 15
-        }
-      ]
+      "history": []
     },
     "1790852725455-7netui": {
       "points": 164,
@@ -1578,98 +1099,7 @@
         "primeira",
         "super"
       ],
-      "history": [
-        {
-          "label": "Jogo: imagem e palavra TARTARUGA",
-          "at": 1793056634194,
-          "score": 12
-        },
-        {
-          "label": "Letra F",
-          "at": 1793054275892,
-          "score": 8
-        },
-        {
-          "label": "Letra E",
-          "at": 1793054274940,
-          "score": 8
-        },
-        {
-          "label": "Letra D",
-          "at": 1793054274019,
-          "score": 8
-        },
-        {
-          "label": "Letra C",
-          "at": 1793054272979,
-          "score": 8
-        },
-        {
-          "label": "Letra B",
-          "at": 1793054271980,
-          "score": 8
-        },
-        {
-          "label": "Letra A",
-          "at": 1793054270756,
-          "score": 8
-        },
-        {
-          "label": "Letra A",
-          "at": 1793054270603,
-          "score": 8
-        },
-        {
-          "label": "Letra A",
-          "at": 1793054270156,
-          "score": 8
-        },
-        {
-          "label": "Letra A",
-          "at": 1793054269668,
-          "score": 8
-        },
-        {
-          "label": "Jogo de matemática",
-          "at": 1790871109332,
-          "score": 12
-        },
-        {
-          "label": "Jogo: organize LÁPIS",
-          "at": 1790871103065,
-          "score": 12
-        },
-        {
-          "label": "Jogo: imagem e palavra NARIZ",
-          "at": 1790871099099,
-          "score": 12
-        },
-        {
-          "label": "Jogo: encontre a letra P",
-          "at": 1790871092889,
-          "score": 10
-        },
-        {
-          "label": "Jogo: encontre a letra F",
-          "at": 1790871090272,
-          "score": 10
-        },
-        {
-          "label": "Letra C",
-          "at": 1790870919670,
-          "score": 8
-        },
-        {
-          "label": "Letra B",
-          "at": 1790870918395,
-          "score": 8
-        },
-        {
-          "label": "Letra A",
-          "at": 1790870917205,
-          "score": 8
-        }
-      ]
+      "history": []
     },
     "1790863655657-atu7px": {
       "points": 0,
@@ -1749,13 +1179,7 @@
       "wrongAnswers": 0,
       "totalAttempts": 31,
       "updatedAt": "2026-09-24T17:24:03.815Z",
-      "levelHistory": [
-        {
-          "level": "Alfabético",
-          "source": "sondagem",
-          "at": "2026-09-24T16:33:08.600Z"
-        }
-      ]
+      "levelHistory": []
     },
     "1789641763586-z4g7kp": {
       "assessmentCompleted": true,
@@ -1767,13 +1191,7 @@
       "wrongAnswers": 0,
       "totalAttempts": 0,
       "updatedAt": "2026-09-24T16:14:52.054Z",
-      "levelHistory": [
-        {
-          "level": "Silábico-Alfabético",
-          "source": "sondagem",
-          "at": "2026-09-24T16:14:52.055Z"
-        }
-      ]
+      "levelHistory": []
     },
     "1789641771389-95i7qg": {
       "assessmentCompleted": false,
@@ -1857,23 +1275,7 @@
       "wrongAnswers": 18,
       "totalAttempts": 106,
       "updatedAt": "2026-09-24T16:32:27.464Z",
-      "levelHistory": [
-        {
-          "level": "Silábico com valor",
-          "source": "sondagem",
-          "at": "2026-09-24T16:15:51.960Z"
-        },
-        {
-          "level": "Silábico-Alfabético",
-          "source": "sistema",
-          "at": "2026-09-24T16:21:57.108Z"
-        },
-        {
-          "level": "Alfabético",
-          "source": "sistema",
-          "at": "2026-09-24T16:22:01.554Z"
-        }
-      ]
+      "levelHistory": []
     },
     "1789641873773-97a9y5": {
       "assessmentCompleted": false,
@@ -2185,28 +1587,7 @@
       "wrongAnswers": 1,
       "totalAttempts": 85,
       "updatedAt": "2026-09-24T18:46:18.062Z",
-      "levelHistory": [
-        {
-          "level": "Silábico sem valor",
-          "source": "sondagem",
-          "at": "2026-09-24T16:14:15.876Z"
-        },
-        {
-          "level": "Silábico com valor",
-          "source": "sistema",
-          "at": "2026-09-24T16:18:26.585Z"
-        },
-        {
-          "level": "Silábico-Alfabético",
-          "source": "sistema",
-          "at": "2026-09-24T16:19:00.889Z"
-        },
-        {
-          "level": "Alfabético",
-          "source": "sistema",
-          "at": "2026-09-24T16:19:08.417Z"
-        }
-      ]
+      "levelHistory": []
     },
     "1790267736335-5hdn6z": {
       "assessmentCompleted": true,
@@ -2218,13 +1599,7 @@
       "wrongAnswers": 0,
       "totalAttempts": 4,
       "updatedAt": "2026-09-24T18:09:33.856Z",
-      "levelHistory": [
-        {
-          "level": "Silábico com valor",
-          "source": "sondagem",
-          "at": "2026-09-24T17:02:16.617Z"
-        }
-      ]
+      "levelHistory": []
     },
     "1790269959310-e2xqfc": {
       "assessmentCompleted": true,
@@ -2236,13 +1611,7 @@
       "wrongAnswers": 0,
       "totalAttempts": 0,
       "updatedAt": "2026-09-24T18:52:07.108Z",
-      "levelHistory": [
-        {
-          "level": "Silábico-Alfabético",
-          "source": "sondagem",
-          "at": "2026-09-24T18:52:07.108Z"
-        }
-      ]
+      "levelHistory": []
     },
     "1790269959334-r2mf4v": {
       "assessmentCompleted": true,
@@ -2254,23 +1623,7 @@
       "wrongAnswers": 1,
       "totalAttempts": 143,
       "updatedAt": "2026-09-24T18:51:50.294Z",
-      "levelHistory": [
-        {
-          "level": "Silábico com valor",
-          "source": "sondagem",
-          "at": "2026-09-24T17:12:55.594Z"
-        },
-        {
-          "level": "Silábico-Alfabético",
-          "source": "sistema",
-          "at": "2026-09-24T18:06:42.594Z"
-        },
-        {
-          "level": "Alfabético",
-          "source": "sistema",
-          "at": "2026-09-24T18:06:44.280Z"
-        }
-      ]
+      "levelHistory": []
     },
     "1790852725455-7netui": {
       "assessmentCompleted": true,
@@ -2282,13 +1635,7 @@
       "wrongAnswers": 2,
       "totalAttempts": 84,
       "updatedAt": "2026-10-26T23:17:14.192Z",
-      "levelHistory": [
-        {
-          "level": "Silábico com valor",
-          "source": "sondagem",
-          "at": "2026-10-01T11:05:50.832Z"
-        }
-      ]
+      "levelHistory": []
     },
     "1790863655657-atu7px": {
       "assessmentCompleted": true,
@@ -2300,13 +1647,7 @@
       "wrongAnswers": 0,
       "totalAttempts": 0,
       "updatedAt": "2026-10-01T14:05:11.395Z",
-      "levelHistory": [
-        {
-          "level": "Alfabético",
-          "source": "sondagem",
-          "at": "2026-10-01T14:05:11.396Z"
-        }
-      ]
+      "levelHistory": []
     },
     "1790863869960-ozsiuw": {
       "assessmentCompleted": false,
