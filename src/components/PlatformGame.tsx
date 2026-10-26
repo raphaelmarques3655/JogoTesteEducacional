@@ -1554,41 +1554,95 @@ export default function PlatformGame({
   }, []);
 
   const toggleFullscreen = async () => {
-    try {
-      const stage = gameStageRef.current;
+    const stage = gameStageRef.current;
 
-      if (!stage) {
-        return;
-      }
+    if (!stage) {
+      return;
+    }
 
-      if (document.fullscreenElement) {
+    const nativeFullscreenActive =
+      document.fullscreenElement === stage;
+
+    if (nativeFullscreenActive) {
+      try {
         const orientation = screen.orientation as ScreenOrientation & {
           unlock?: () => void;
         };
 
         orientation.unlock?.();
-        await document.exitFullscreen();
-        return;
+      } catch {
+        // Ignora navegadores sem suporte.
       }
 
-      await stage.requestFullscreen();
+      try {
+        await document.exitFullscreen();
+      } catch {
+        // Se o navegador falhar ao sair, o estado visual ainda será restaurado.
+      }
+
+      setIsFullscreen(false);
+      return;
+    }
+
+    if (isFullscreen) {
+      setIsFullscreen(false);
 
       try {
         const orientation = screen.orientation as ScreenOrientation & {
-          lock?: (orientation: string) => Promise<void>;
+          unlock?: () => void;
         };
 
-        await orientation.lock?.('landscape');
+        orientation.unlock?.();
       } catch {
-        // Alguns navegadores (principalmente iOS) não permitem travar a orientação.
+        // Ignora navegadores sem suporte.
       }
-    } catch (error) {
-      console.error(
-        'Não foi possível ativar a tela cheia:',
-        error
-      );
+
+      return;
     }
+
+    const requestNativeFullscreen =
+      stage.requestFullscreen?.bind(stage);
+
+    if (requestNativeFullscreen) {
+      try {
+        await requestNativeFullscreen();
+
+        setIsFullscreen(true);
+
+        try {
+          const orientation = screen.orientation as ScreenOrientation & {
+            lock?: (orientation: string) => Promise<void>;
+          };
+
+          await orientation.lock?.('landscape');
+        } catch {
+          // Alguns navegadores não permitem travar a orientação.
+        }
+
+        return;
+      } catch {
+        // Cai no modo expandido por CSS abaixo.
+      }
+    }
+
+    setIsFullscreen(true);
   };
+
+  useEffect(() => {
+    if (!isFullscreen) {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      return;
+    }
+
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    };
+  }, [isFullscreen]);
 
   /*
     MULTITOUCH MOBILE REAL
@@ -1770,7 +1824,25 @@ export default function PlatformGame({
           transform: translateY(-1px);
         }
 
-        .platform-game-stage:fullscreen {
+
+        .platform-game-stage.platform-game-expanded {
+          position: fixed;
+          inset: 0;
+          z-index: 99999;
+          max-width: none;
+          margin: 0;
+          padding: 12px;
+          background: #0b1424;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+        }
+
+        .platform-game-stage:fullscreen,
+        .platform-game-stage.platform-game-expanded {
           width: 100vw;
           height: 100vh;
           max-width: none;
@@ -1785,12 +1857,14 @@ export default function PlatformGame({
           overflow: hidden;
         }
 
-        .platform-game-stage:fullscreen .platform-game-toolbar {
+        .platform-game-stage:fullscreen .platform-game-toolbar,
+        .platform-game-stage.platform-game-expanded .platform-game-toolbar {
           width: min(100%, 1100px);
           flex: 0 0 auto;
         }
 
-        .platform-game-stage:fullscreen canvas {
+        .platform-game-stage:fullscreen canvas,
+        .platform-game-stage.platform-game-expanded canvas {
           width: auto !important;
           height: auto !important;
           max-width: min(100%, 1100px) !important;
@@ -1799,7 +1873,8 @@ export default function PlatformGame({
           flex: 0 1 auto;
         }
 
-        .platform-game-stage:fullscreen .platform-mobile-hud {
+        .platform-game-stage:fullscreen .platform-mobile-hud,
+        .platform-game-stage.platform-game-expanded .platform-mobile-hud {
           width: min(100%, 900px);
           flex: 0 0 auto;
         }
@@ -1884,7 +1959,8 @@ export default function PlatformGame({
             font-size: 13px;
           }
 
-          .platform-game-stage:fullscreen {
+          .platform-game-stage:fullscreen,
+          .platform-game-stage.platform-game-expanded {
             justify-content: center;
             padding: 0;
             width: 100vw;
@@ -1892,7 +1968,8 @@ export default function PlatformGame({
             background: #07111f;
           }
 
-          .platform-game-stage:fullscreen .platform-game-toolbar {
+          .platform-game-stage:fullscreen .platform-game-toolbar,
+          .platform-game-stage.platform-game-expanded .platform-game-toolbar {
             position: absolute;
             top: max(8px, env(safe-area-inset-top));
             right: max(8px, env(safe-area-inset-right));
@@ -1901,13 +1978,15 @@ export default function PlatformGame({
             z-index: 30;
           }
 
-          .platform-game-stage:fullscreen .platform-fullscreen-button {
+          .platform-game-stage:fullscreen .platform-fullscreen-button,
+          .platform-game-stage.platform-game-expanded .platform-fullscreen-button {
             padding: 8px 10px;
             font-size: 12px;
             opacity: .84;
           }
 
-          .platform-game-stage:fullscreen canvas {
+          .platform-game-stage:fullscreen canvas,
+          .platform-game-stage.platform-game-expanded canvas {
             width: 100vw !important;
             height: 100vh !important;
             max-width: 100vw !important;
@@ -1918,7 +1997,8 @@ export default function PlatformGame({
             object-fit: contain;
           }
 
-          .platform-game-stage:fullscreen .platform-mobile-hud {
+          .platform-game-stage:fullscreen .platform-mobile-hud,
+          .platform-game-stage.platform-game-expanded .platform-mobile-hud {
             position: absolute;
             left: 0;
             right: 0;
@@ -1933,11 +2013,13 @@ export default function PlatformGame({
             pointer-events: none;
           }
 
-          .platform-game-stage:fullscreen .platform-mobile-group {
+          .platform-game-stage:fullscreen .platform-mobile-group,
+          .platform-game-stage.platform-game-expanded .platform-mobile-group {
             pointer-events: auto;
           }
 
-          .platform-game-stage:fullscreen .platform-mobile-button {
+          .platform-game-stage:fullscreen .platform-mobile-button,
+          .platform-game-stage.platform-game-expanded .platform-mobile-button {
             width: 72px;
             height: 72px;
             font-size: 30px;
@@ -1947,7 +2029,8 @@ export default function PlatformGame({
             -webkit-backdrop-filter: blur(4px);
           }
 
-          .platform-game-stage:fullscreen .platform-mobile-jump {
+          .platform-game-stage:fullscreen .platform-mobile-jump,
+          .platform-game-stage.platform-game-expanded .platform-mobile-jump {
             width: 100px;
             height: 72px;
             border-radius: 24px;
@@ -1956,7 +2039,8 @@ export default function PlatformGame({
           }
 
           @media (orientation: portrait) {
-            .platform-game-stage:fullscreen::before {
+            .platform-game-stage:fullscreen::before,
+            .platform-game-stage.platform-game-expanded::before {
               content: '↻ Gire o celular para jogar melhor';
               position: absolute;
               top: 50%;
@@ -2018,7 +2102,7 @@ export default function PlatformGame({
 
       <div
         ref={gameStageRef}
-        className="platform-game-stage"
+        className={`platform-game-stage${isFullscreen ? ' platform-game-expanded' : ''}`}
       >
         <div className="platform-game-toolbar">
           <button
