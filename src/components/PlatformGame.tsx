@@ -1562,11 +1562,26 @@ export default function PlatformGame({
       }
 
       if (document.fullscreenElement) {
+        const orientation = screen.orientation as ScreenOrientation & {
+          unlock?: () => void;
+        };
+
+        orientation.unlock?.();
         await document.exitFullscreen();
         return;
       }
 
       await stage.requestFullscreen();
+
+      try {
+        const orientation = screen.orientation as ScreenOrientation & {
+          lock?: (orientation: string) => Promise<void>;
+        };
+
+        await orientation.lock?.('landscape');
+      } catch {
+        // Alguns navegadores (principalmente iOS) não permitem travar a orientação.
+      }
     } catch (error) {
       console.error(
         'Não foi possível ativar a tela cheia:',
@@ -1870,12 +1885,92 @@ export default function PlatformGame({
           }
 
           .platform-game-stage:fullscreen {
-            justify-content: flex-start;
-            padding: 8px;
+            justify-content: center;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #07111f;
+          }
+
+          .platform-game-stage:fullscreen .platform-game-toolbar {
+            position: absolute;
+            top: max(8px, env(safe-area-inset-top));
+            right: max(8px, env(safe-area-inset-right));
+            width: auto;
+            margin: 0;
+            z-index: 30;
+          }
+
+          .platform-game-stage:fullscreen .platform-fullscreen-button {
+            padding: 8px 10px;
+            font-size: 12px;
+            opacity: .84;
           }
 
           .platform-game-stage:fullscreen canvas {
-            max-height: calc(100vh - 126px) !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: 100vw !important;
+            max-height: 100vh !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            object-fit: contain;
+          }
+
+          .platform-game-stage:fullscreen .platform-mobile-hud {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: max(10px, env(safe-area-inset-bottom));
+            width: 100%;
+            padding:
+              0
+              max(18px, env(safe-area-inset-right))
+              0
+              max(18px, env(safe-area-inset-left));
+            z-index: 25;
+            pointer-events: none;
+          }
+
+          .platform-game-stage:fullscreen .platform-mobile-group {
+            pointer-events: auto;
+          }
+
+          .platform-game-stage:fullscreen .platform-mobile-button {
+            width: 72px;
+            height: 72px;
+            font-size: 30px;
+            background: rgba(12, 27, 50, .68);
+            border: 2px solid rgba(255,255,255,.82);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+          }
+
+          .platform-game-stage:fullscreen .platform-mobile-jump {
+            width: 100px;
+            height: 72px;
+            border-radius: 24px;
+            font-size: 15px;
+            background: rgba(76, 64, 170, .72);
+          }
+
+          @media (orientation: portrait) {
+            .platform-game-stage:fullscreen::before {
+              content: '↻ Gire o celular para jogar melhor';
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              z-index: 40;
+              padding: 14px 18px;
+              border-radius: 16px;
+              background: rgba(10, 20, 35, .9);
+              color: white;
+              font-weight: 800;
+              font-size: 14px;
+              pointer-events: none;
+            }
           }
         }
       `}</style>
@@ -1892,7 +1987,7 @@ export default function PlatformGame({
           opacity: 0.76
         }}
       >
-        No celular, use os controles sobre o jogo.
+        No celular, toque em Tela cheia e jogue com o aparelho na horizontal.
       </p>
 
       <div
